@@ -4,15 +4,15 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var readline = require('readline-sync');
-var omdb = require('omdb-client');
+//var omdb = require('omdb-client');
 
-const Movie = require('./models/movie');
+/*const Movie = require('./models/movie');
 //OMDB API STUFF
 
 function search_movie_title(title){
 	//create search paramters
 	var params = create_omdb_params(title);
-	//call get functionn given paramters
+	//call get function given paramters
 	omdb.get(params, function(err, data) {
 		//print and save data
     	console.log(data);
@@ -21,7 +21,7 @@ function search_movie_title(title){
 }
 
 function create_omdb_params(title,year,type,director){
-	//declare and return functions 
+	//declare and return functions
 	var params = {
     	apiKey: 'f7cb9dc5',
     	title: title
@@ -42,10 +42,41 @@ function save_movie_from_data(data){
 	new_movie.save();
 	console.log("Movie data saved!");
 	console.log(new_movie);
-}
+}*/
 
 //Test Prompt
-search_movie_title(readline.question("Search for movie: "));
+//search_movie_title(readline.question("Search for a movie or TV show: "));
+
+/*GOOGLE BOOKS API*/
+const books = require('google-books-search');
+const Book = require('./models/Book')
+
+var book_info = readline.question("Search for a book: ");
+
+books.search(book_info, function(error, results) {
+    if ( ! error ) {
+        console.log(results[0]);
+				save_book_from_data(results[0])
+    } else {
+        console.log(error);
+    }
+});
+
+function save_book_from_data(data){
+	//Create new book object and display in console
+	console.log("Saving book data...");
+	var new_book = new Book( {
+  		title: data.title,
+			authors: data.authors,
+  		publishedDate: data.publishedDate,
+  		description: data.description,
+			pageCount: data.pageCount,
+			link: data.link
+  } )
+	//Save new movie object and display in console
+	new_book.save();
+	console.log("Book data saved!");
+}
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
