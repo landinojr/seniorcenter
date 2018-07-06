@@ -4,9 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var readline = require('readline-sync');
-//var omdb = require('omdb-client');
+var omdb = require('omdb-client');
 
-/*const Movie = require('./models/movie');
+const Movie = require('./models/movie');
 //OMDB API STUFF
 
 function search_movie_title(title){
@@ -42,10 +42,10 @@ function save_movie_from_data(data){
 	new_movie.save();
 	console.log("Movie data saved!");
 	console.log(new_movie);
-}*/
+}
 
 //Test Prompt
-//search_movie_title(readline.question("Search for a movie or TV show: "));
+search_movie_title(readline.question("Search for a movie or TV show: "));
 
 /*GOOGLE BOOKS API*/
 const books = require('google-books-search');
