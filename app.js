@@ -10,6 +10,8 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 //Models
 const Movie = require('./models/movie');
+const books = require('google-books-search');
+const Book = require('./models/Book');
 //Controllers
 //const mediaController = require('./controllers/mediaController');
 
@@ -30,9 +32,8 @@ function get_posterURL(title){
 		return data.Poster;
 	});
 }
-
 function create_omdb_params(title){
-	//declare and return functions
+	//declare and return functions 
 	var params = {
     	apiKey: 'f7cb9dc5',
     	title: title
@@ -63,42 +64,40 @@ function save_movie_from_data(data){
 	new_movie.save(function(err,result){
 		console.log(new_movie.title + " data saved!");
 	});
-
+	
 }
 
-//Test Prompt
-search_movie_title(readline.question("Search for a movie or TV show: "));
-
 /*GOOGLE BOOKS API*/
-const books = require('google-books-search');
-const Book = require('./models/Book')
+//var book_info = readline.question("Search for a book: ");
 
-var book_info = readline.question("Search for a book: ");
-
-books.search(book_info, function(error, results) {
+function search_book_title(title){
+  books.search(title, function(error, data) {
     if ( ! error ) {
-        console.log(results[0]);
-				save_book_from_data(results[0])
+        console.log(data[0]);
+        save_book_from_data(data[0])
     } else {
         console.log(error);
     }
-});
+  });
+}
 
 function save_book_from_data(data){
-	//Create new book object and display in console
-	console.log("Saving book data...");
-	var new_book = new Book( {
-  		title: data.title,
-			authors: data.authors,
-  		publishedDate: data.publishedDate,
-  		description: data.description,
-			pageCount: data.pageCount,
-			link: data.link
+  //Create new book object and display in console
+  console.log("Saving book data...");
+  var new_book = new Book( {
+      title: data.title,
+      authors: data.authors,
+      publishedDate: data.publishedDate,
+      description: data.description,
+      pageCount: data.pageCount,
+      posterURL: data.thumbnail,
+      link: data.link
   } )
-	//Save new movie object and display in console
-	new_book.save();
-	console.log("Book data saved!");
+  //Save new movie object and display in console
+  new_book.save();
+  console.log("Book data saved!");
 }
+
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -138,13 +137,26 @@ app.get('/findMovie',(req,res)=> {
 	res.render('media');
 })
 
+app.get('/findBook',(req,res)=> {
+  res.render('media');
+})
+
 app.post('/findMovie',(req,res)=> {
 	var params = create_omdb_params(req.body.movieTitle);
 	omdb.get(params, function(err, data) {
-		data = data ||
+		data = data || 
 		   {Poster: "https://images.costco-static.com/ImageDelivery/imageService?profileId=12026540&imageId=9555-847__1&recipeName=350"}
 		res.render('media', {posterurl: data.Poster, title: 'Your Media'});
 	});
+})
+
+app.post('/findBook',(req,res)=> {
+  console.log(req.body.bookTitle);
+  books.search(req.body.bookTitle, function(err, data) {
+    var url = data[0];
+    url = url || {thumbnail:"https://www.iredell.lib.nc.us/ImageRepository/Document?documentID=441"}
+    res.render('media', {posterurl: url.thumbnail, title: 'Your Media'});
+  });
 })
 
 /*
