@@ -9,6 +9,7 @@ var bookSchema = mongoose.Schema( {
   publishedDate: String,
   description: String,
   pageCount: Number,
+  posterURL: String,
   link: String
 } );
 
