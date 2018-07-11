@@ -16,7 +16,7 @@ const Book = require('./models/Book');
 //const mediaController = require('./controllers/mediaController');
 
 //Suggestion keywords
-bookKeywords = ["kind","caring","stories","travel","children"];
+bookKeywords = ["kind","caring","stories","travel","fiction"];
 
 
 function get_posterURL(title){
@@ -153,7 +153,13 @@ app.get('/findBook',(req,res)=> {
 })
 
 app.get('/home',(req,res)=> {
-  res.render('home');
+  var query = bookKeywords[random_int(bookKeywords.length)];
+  console.log(query);
+  books.search(query,options_for_key_search(random_int(5)), function(err, data) {
+    var url = data[0];
+    url = url || {thumbnail:"https://images-na.ssl-images-amazon.com/images/I/41P-CfLMjwL._SX323_BO1,204,203,200_.jpg"}
+    res.render('home', {posterurl: url.thumbnail, title: 'SeniorClub'});
+  });
 })
 
 app.post('/findMovie',(req,res)=> {
@@ -180,7 +186,7 @@ app.post('/home',(req,res)=> {
   books.search(query,options_for_key_search(random_int(5)), function(err, data) {
     var url = data[0];
     url = url || {thumbnail:"https://images-na.ssl-images-amazon.com/images/I/41P-CfLMjwL._SX323_BO1,204,203,200_.jpg"}
-    res.render('home', {posterurl: url.thumbnail, title: 'SeiorClub'});
+    res.render('home', {posterurl: url.thumbnail, title: 'SeniorClub'});
   });
 })
 
