@@ -8,30 +8,41 @@ var readline = require('readline-sync');
 var omdb = require('omdb-client');
 const session = require("express-session");
 const bodyParser = require("body-parser");
+var books = require('google-books-search');
 //Models
-const Movie = require('./models/movie');
-const books = require('google-books-search');
+const Movie = require('./models/movie');  
 const Book = require('./models/Book');
 //Controllers
 //const mediaController = require('./controllers/mediaController');
 
-
-//OMDB API STUFF
-
-/*   OMDB EXAMPLE .get
+//Suggestion keywords
+bookKeywords = ["kind","caring","stories","travel","children"];
 
 
-omdb.get(params, function(err, data) {
-		save_movie_from_data(data);
-	});
-
-*/
 function get_posterURL(title){
 	var params = create_omdb_params(title);
 	omdb.get(params, function(err, data) {
 		return data.Poster;
 	});
 }
+
+function options_for_key_search(shift){
+  //declare and return functions 
+  var options = {
+    field:'subject',
+    limit: 1,
+    offset:shift,
+    type: 'books',
+    order: 'relevance',
+    lang: 'en'
+  }
+  return options;
+}
+
+function random_int(max){
+  return Math.floor(Math.random()*max);
+}
+
 function create_omdb_params(title){
 	//declare and return functions 
 	var params = {
@@ -141,6 +152,10 @@ app.get('/findBook',(req,res)=> {
   res.render('media');
 })
 
+app.get('/home',(req,res)=> {
+  res.render('home');
+})
+
 app.post('/findMovie',(req,res)=> {
 	var params = create_omdb_params(req.body.movieTitle);
 	omdb.get(params, function(err, data) {
@@ -150,7 +165,7 @@ app.post('/findMovie',(req,res)=> {
 	});
 })
 
-app.post('/findBook',(req,res)=> {
+app.post('/findBook',(req,res)=> {  
   console.log(req.body.bookTitle);
   books.search(req.body.bookTitle, function(err, data) {
     var url = data[0];
@@ -158,6 +173,18 @@ app.post('/findBook',(req,res)=> {
     res.render('media', {posterurl: url.thumbnail, title: 'Your Media'});
   });
 })
+
+app.post('/home',(req,res)=> {
+  var query = bookKeywords[random_int(bookKeywords.length)];
+  console.log(query);
+  books.search(query,options_for_key_search(random_int(5)), function(err, data) {
+    var url = data[0];
+    url = url || {thumbnail:"https://images-na.ssl-images-amazon.com/images/I/41P-CfLMjwL._SX323_BO1,204,203,200_.jpg"}
+    res.render('home', {posterurl: url.thumbnail, title: 'SeiorClub'});
+  });
+})
+
+
 
 /*
 app.get('/media', mediaController.getAllNotes );
