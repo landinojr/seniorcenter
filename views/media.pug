@@ -1,8 +1,6 @@
 extends layout
 
 block content
-	h1= title
-	p Welcome to #{title}
 	form(method="post", action = "/findMovie")
 		label Search for Movie:
 		input(type ="text", name = "movieTitle")
@@ -14,5 +12,3 @@ block content
 		br
 		input(type= "submit")
 	img(src=posterurl)
-
-
