@@ -1,12 +1,11 @@
 extends layout
 
 block content
-	h1(class="blockquote text-center", action = "/home") #{title}
-		br
-		small.text-muted Welcome to #{title}
-	img(src=posterurl, class="rounded mx-auto d-block",width="320",height="auto")
-	form(method="post", action = "/home",style='text-align:center;')
-		input(type= "submit", class="btn btn-secodary", value="Find another book!") 
-
-
-
+	#homecontainer
+		h1(class="blockquote text-center", action = "/home") #{title}
+			br
+			small.text-muted Welcome to #{title}
+		img(src=posterurl)#poster.rounded.mx-auto.d-block
+		// ^ the styling can go with the img in html, but shouldn't in pug; i put it in style.css but kept the classes in case they're necessary
+		form(method="post", action = "/home",style='text-align:center;')
+			input(type= "submit" value="Find another book!").btn.btn-secondary

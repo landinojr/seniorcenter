@@ -1,8 +1,28 @@
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: lightblue;
 }
 
 a {
   color: #00B7FF;
+}
+
+#poster {
+  border-radius: 5px;
+  width: 320px;
+}
+
+#homecontainer {
+  background-color: white;
+  border-color: #6c757d;
+  border-radius: 5px;
+  width: 500px; /*may need changing*/
+  margin: 0 auto;
+}
+
+main {
+	height:600%;
+	width:auto;
 }
