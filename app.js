@@ -9,16 +9,14 @@ var omdb = require('omdb-client');
 const session = require("express-session");
 const bodyParser = require("body-parser");
 var books = require('google-books-search');
-
-var service = express();
 //Models
-const Movie = require('./models/movie');
+const Movie = require('./models/movie');  
 const Book = require('./models/Book');
 //Controllers
 //const mediaController = require('./controllers/mediaController');
 
 //Suggestion keywords
-bookKeywords = ["kind","caring","stories","travel","fiction"];
+bookKeywords = ["kind","caring","stories","travel","fiction","cooking"];
 
 
 function get_posterURL(title){
@@ -29,7 +27,7 @@ function get_posterURL(title){
 }
 
 function options_for_key_search(shift){
-  //declare and return functions
+  //declare and return functions 
   var options = {
     field:'subject',
     limit: 1,
@@ -46,7 +44,7 @@ function random_int(max){
 }
 
 function create_omdb_params(title){
-	//declare and return functions
+	//declare and return functions 
 	var params = {
     	apiKey: 'f7cb9dc5',
     	title: title
@@ -77,7 +75,7 @@ function save_movie_from_data(data){
 	new_movie.save(function(err,result){
 		console.log(new_movie.title + " data saved!");
 	});
-
+	
 }
 
 /*GOOGLE BOOKS API*/
@@ -167,13 +165,13 @@ app.get('/home',(req,res)=> {
 app.post('/findMovie',(req,res)=> {
 	var params = create_omdb_params(req.body.movieTitle);
 	omdb.get(params, function(err, data) {
-		data = data ||
+		data = data || 
 		   {Poster: "https://images.costco-static.com/ImageDelivery/imageService?profileId=12026540&imageId=9555-847__1&recipeName=350"}
 		res.render('media', {posterurl: data.Poster, title: 'Your Media'});
 	});
 })
 
-app.post('/findBook',(req,res)=> {
+app.post('/findBook',(req,res)=> {  
   console.log(req.body.bookTitle);
   books.search(req.body.bookTitle, function(err, data) {
     var url = data[0];
@@ -222,18 +220,11 @@ app.use(function(err, req, res, next) {
 
 app.use(bodyParser.json());
 
-service.use(bodyParser.json());
-
-var server = service.listen(8081, function() {
-  console.log('API server listening lol something is wrong if i dont show up ')
-})
-
 
 console.log("before hook...");
 app.use('/hook', function(req, res){
   console.log(JSON.stringify(req.body, null, 2));
   process_request(req, res);
-	console.log("hey fam um, we in the hook")
 });
 
 function process_request(req,res){
