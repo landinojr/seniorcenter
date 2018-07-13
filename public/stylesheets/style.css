@@ -1,8 +1,42 @@
+
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: lightblue;
 }
 
 a {
   color: #00B7FF;
+}
+
+input {
+  margin: 10px;
+}
+
+main {
+	height:600%;
+	width:auto;
+}
+
+.nav-item {
+  margin: 5px;
+}
+
+#poster {
+  border-radius: 5px;
+  width: 80%;
+}
+
+#homecontainer {
+  background-color: white;
+  border-color: #6c757d;
+  border-radius: 5px;
+  width: 250px; /*may need changing*/
+  margin: 10px auto;
+  padding: 5px;
+}
+
+#navbarcontainer {
+  width: 358px;
+  margin: auto;
 }

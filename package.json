@@ -17,7 +17,7 @@
     "mongoose": "^5.2.1",
     "morgan": "~1.9.0",
     "omdb-client": "^2.0.0",
-    "pug": "2.0.0-beta11",
+    "pug": "^2.0.0-beta11",
     "readline-sync": "^1.4.9"
   },
   "main": "app.js",

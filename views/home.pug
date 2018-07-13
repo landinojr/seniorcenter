@@ -1,12 +1,10 @@
 extends layout
 
 block content
-	h1(class="blockquote text-center", action = "/home") #{title}
-		br
-		small.text-muted Welcome to #{title}
-	img(src=posterurl, class="rounded mx-auto d-block",width="320",height="auto")
-	form(method="post", action = "/home",style='text-align:center;')
-		input(type= "submit", class="btn btn-secodary", value="Find another book!") 
-
-
-
+	#homecontainer
+		h1(action="/home").blockquote.text-center #{title}
+			br
+			small.text-muted Welcome to #{title}
+		img(src=posterurl)#poster.rounded.mx-auto.d-block
+		form(method="post", action = "/home",style='text-align:center;')
+			input(type= "submit" value="Find another book!").btn.btn-secondary

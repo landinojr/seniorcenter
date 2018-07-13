@@ -9,8 +9,6 @@ var omdb = require('omdb-client');
 const session = require("express-session");
 const bodyParser = require("body-parser");
 var books = require('google-books-search');
-
-var service = express();
 //Models
 const Movie = require('./models/movie');
 const Book = require('./models/Book');
@@ -18,7 +16,7 @@ const Book = require('./models/Book');
 //const mediaController = require('./controllers/mediaController');
 
 //Suggestion keywords
-bookKeywords = ["kind","caring","stories","travel","fiction"];
+bookKeywords = ["kind","caring","stories","travel","fiction","cooking"];
 
 
 var app = express();
@@ -82,7 +80,6 @@ exports.save_movie_from_data = function (data){
 	new_movie.save(function(err,result){
 		console.log(new_movie.title + " data saved!");
 	});
-
 }
 
 /*GOOGLE BOOKS API*/
@@ -139,6 +136,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({ secret: 'zzbbyanana' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -199,16 +197,13 @@ app.post('/home',(req,res)=> {
   });
 })
 
-
-
 /*
 app.get('/media', mediaController.getAllNotes );
 app.post('/searchMedia', mediaController.saveNote);
 app.post('/searchMedia', mediaController.deleteNote);
 */
 app.use('/', function(req, res, next) {
-  console.log("in / controller")
-  res.render('index', { title: 'SeniorClub' });
+  res.render('home', { title: 'SeniorClub' });
 });
 
 // catch 404 and forward to error handler
@@ -229,13 +224,33 @@ app.use(function(err, req, res, next) {
 
 app.use(bodyParser.json());
 
-service.use(bodyParser.json());
 
-var server = service.listen(8081, function() {
-  console.log('API server listening lol something is wrong if i dont show up ')
-})
+<<<<<<< HEAD
+=======
+console.log("before hook...");
+app.use('/hook', function(req, res){
+  console.log(JSON.stringify(req.body, null, 2));
+  process_request(req, res);
+});
 
-
+function process_request(req,res){
+  console.log(body.queryResult.parameters);
+  var output_string = "there was an error";
+  if(body.queryResult.intent.displayName === "search"){
+    output_string = "MOVIES";
+  }else{
+    output_string = "test error!";
+  }
+  return res.json({
+    "fufillmentMessages":[],
+    "fufillmentText": output_string,
+    "payload":{},
+    "outputContexts":[],
+    "source":"Test Source",
+    "followupEventInput":{}
+  })
+}
+>>>>>>> 320418e2f6738b6adb9e714fe8d3f0ef52b21ded
 
 
 module.exports = app;
