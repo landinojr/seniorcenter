@@ -1,15 +1,28 @@
 var MyData = [];
+var methods = require('../helpers/methods.js');
+var omdb = require('omdb-client');
 exports.getMovie = function (data){
   const imdb = require('imdb-api');
 
-  imdb.search({
-    title: String(data)
-  }, {
-    apiKey: '5530cdc3'
-
-  }).then(console.log).catch(console.log);
-
+  var params = methods.create_omdb_params(req.body.movieTitle);
+	omdb.get(params, function(err, data) {
+		data = data
+    return data.Title + " " + data.Year
+	});
 }
+
+
+
+
+
+  //imdb.search({
+  //  title: String(data)
+  //}, {
+  //  apiKey: '5530cdc3'
+
+//  }).then(console.log).catch(console.log);
+
+
 
 
 
@@ -74,6 +87,19 @@ exports.get_posterURL = function(title){
 		return data.Poster;
 	});
 }
+
+exports.getMovieData = function(title, callback) {
+	var params = methods.create_omdb_params(title);
+  
+	omdb.get(params, function(err, data) {
+    if(err){
+      callback(err, null);
+    } else {
+      callback(null, data);
+    }
+	});
+}
+
 
 exports.options_for_key_search = function(shift){
   //declare and return functions

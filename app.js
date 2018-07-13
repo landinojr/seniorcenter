@@ -224,9 +224,6 @@ app.use(function(err, req, res, next) {
 
 app.use(bodyParser.json());
 
-
-<<<<<<< HEAD
-=======
 console.log("before hook...");
 app.use('/hook', function(req, res){
   console.log(JSON.stringify(req.body, null, 2));
@@ -250,7 +247,6 @@ function process_request(req,res){
     "followupEventInput":{}
   })
 }
->>>>>>> 320418e2f6738b6adb9e714fe8d3f0ef52b21ded
 
 
 module.exports = app;
