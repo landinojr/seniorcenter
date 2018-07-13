@@ -21,12 +21,17 @@ const Book = require('./models/Book');
 bookKeywords = ["kind","caring","stories","travel","fiction"];
 
 
+var app = express();
+
+const helloDFController = require('./controllers/helloDFController')
+
 function get_posterURL(title){
 	var params = create_omdb_params(title);
 	omdb.get(params, function(err, data) {
 		return data.Poster;
 	});
 }
+
 
 function options_for_key_search(shift){
   //declare and return functions
@@ -64,7 +69,7 @@ function display_data(){
 	});
 }
 
-function save_movie_from_data(data){
+exports.save_movie_from_data = function (data){
 	//Create new movie object and display in console
 	console.log("Saving movie data...");
 	var new_movie = new Movie( {
@@ -116,7 +121,6 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const formsRouter = require('./routes/forms');
 
-var app = express();
 
 const mongoose = require( 'mongoose' );
 // here is where we connect to the database!
@@ -182,6 +186,9 @@ app.post('/findBook',(req,res)=> {
   });
 })
 
+app.post('/hook',helloDFController.respondToDF)
+
+
 app.post('/home',(req,res)=> {
   var query = bookKeywords[random_int(bookKeywords.length)];
   console.log(query);
@@ -229,30 +236,6 @@ var server = service.listen(8081, function() {
 })
 
 
-console.log("before hook...");
-app.use('/hook', function(req, res){
-  console.log(JSON.stringify(req.body, null, 2));
-  process_request(req, res);
-	console.log("hey fam um, we in the hook")
-});
-
-function process_request(req,res){
-  console.log(body.queryResult.parameters);
-  var output_string = "there was an error";
-  if(body.queryResult.intent.displayName === "search"){
-    output_string = "MOVIES";
-  }else{
-    output_string = "test error!";
-  }
-  return res.json({
-    "fufillmentMessages":[],
-    "fufillmentText": output_string,
-    "payload":{},
-    "outputContexts":[],
-    "source":"Test Source",
-    "followupEventInput":{}
-  })
-}
 
 
 module.exports = app;
