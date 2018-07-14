@@ -30,7 +30,6 @@ function get_posterURL(title){
 	});
 }
 
-
 function options_for_key_search(shift){
   //declare and return functions
   var options = {
@@ -117,7 +116,7 @@ function save_book_from_data(data){
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const formsRouter = require('./routes/forms');
-
+const profileRouter = require('./routes/profile');
 
 const mongoose = require( 'mongoose' );
 // here is where we connect to the database!
@@ -143,6 +142,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/forms', formsRouter);
+app.use('/profile', profileRouter);
 
 app.get('/media',(req,res)=> {
 	res.render('media');
@@ -186,7 +186,6 @@ app.post('/findBook',(req,res)=> {
 
 app.post('/hook',helloDFController.respondToDF)
 
-
 app.post('/home',(req,res)=> {
   var query = bookKeywords[random_int(bookKeywords.length)];
   console.log(query);
@@ -196,6 +195,12 @@ app.post('/home',(req,res)=> {
     res.render('home', {posterurl: url.thumbnail, title: 'SeniorClub'});
   });
 })
+
+app.get('/profile', function(req, res) {
+  res.render('profile', {
+    user : req.user // get the user out of session and pass to template
+  });
+});
 
 /*
 app.get('/media', mediaController.getAllNotes );
@@ -247,6 +252,5 @@ function process_request(req,res){
     "followupEventInput":{}
   })
 }
-
 
 module.exports = app;

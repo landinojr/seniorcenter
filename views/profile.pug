@@ -1,0 +1,21 @@
+extends layout
+
+block content
+	.row
+		.col-sm-4
+			h1 #{user.googlename}
+	h2 Media preferences
+	#preferences
+		h3 Preferred media type(s):
+			ul
+				for m in user.mediaPreferences
+					li m
+		h3 Preferred genre(s):
+			ul
+				for g in user.genres
+					li g
+	h2 Media services
+	#services
+		ul
+			for m in user.mediaServices
+				li m
