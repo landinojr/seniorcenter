@@ -10,19 +10,47 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 var books = require('google-books-search');
 //Models
-const Movie = require('./models/movie');
+const Movie = require('./models/movie');  
 const Book = require('./models/Book');
+const async = require('async');
+
 //Controllers
 //const mediaController = require('./controllers/mediaController');
 
 //Suggestion keywords
-bookKeywords = ["kind","caring","stories","travel","fiction","cooking"];
+var bookKeywords = ["fiction","cooking","survival","physics","art"];
+//Session state
+var auth2;
+var signedIn = false;
+const function_list = [];
 
+//Google authentication
+var initClient = function() {
+    gapi.load('auth2', function(){
+        auth2 = gapi.auth2.init({
+            client_id: '323237114211-bvkkag3t6ddo9dcvdf7p0laoe99b6kap.apps.googleusercontent.com'
+        });
+        // Attach the click handler to the sign-in button
+        auth2.attachClickHandler('signin-button', {}, onSuccess, onFailure);
+    });
+};
 
-var app = express();
+var onSuccess = function(user) {
+    console.log('Signed in as ' + user.getBasicProfile().getName());
+    signedIn = true;
+ };
 
-const helloDFController = require('./controllers/helloDFController')
+var onFailure = function(error) {
+    console.log(error);
+};
 
+function signOut() {
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+  }
+
+//Database + API functions
 function get_posterURL(title){
 	var params = create_omdb_params(title);
 	omdb.get(params, function(err, data) {
@@ -30,13 +58,13 @@ function get_posterURL(title){
 	});
 }
 
-function options_for_key_search(shift){
-  //declare and return functions
+function options_for_key_search(searchField,shift,max){
+  //declare and return functions 
   var options = {
-    field:'subject',
-    limit: 1,
-    offset:shift,
-    type: 'books',
+    field: searchField,
+    limit: max,
+    offset: shift,
+    type: 'books', 
     order: 'relevance',
     lang: 'en'
   }
@@ -48,7 +76,7 @@ function random_int(max){
 }
 
 function create_omdb_params(title){
-	//declare and return functions
+	//declare and return functions 
 	var params = {
     	apiKey: 'f7cb9dc5',
     	title: title
@@ -66,7 +94,7 @@ function display_data(){
 	});
 }
 
-exports.save_movie_from_data = function (data){
+function save_movie_from_data(data){
 	//Create new movie object and display in console
 	console.log("Saving movie data...");
 	var new_movie = new Movie( {
@@ -79,6 +107,7 @@ exports.save_movie_from_data = function (data){
 	new_movie.save(function(err,result){
 		console.log(new_movie.title + " data saved!");
 	});
+	
 }
 
 /*GOOGLE BOOKS API*/
@@ -87,7 +116,7 @@ exports.save_movie_from_data = function (data){
 function search_book_title(title){
   books.search(title, function(error, data) {
     if ( ! error ) {
-        console.log(data[0]);
+        //console.log(data[0]);
         save_book_from_data(data[0])
     } else {
         console.log(error);
@@ -116,7 +145,8 @@ function save_book_from_data(data){
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const formsRouter = require('./routes/forms');
-const profileRouter = require('./routes/profile');
+
+var app = express();
 
 const mongoose = require( 'mongoose' );
 // here is where we connect to the database!
@@ -135,14 +165,12 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({ secret: 'zzbbyanana' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/forms', formsRouter);
-app.use('/profile', profileRouter);
 
 app.get('/media',(req,res)=> {
 	res.render('media');
@@ -156,27 +184,67 @@ app.get('/findBook',(req,res)=> {
   res.render('media');
 })
 
+app.post('/home',(req,res)=> {
+  //console.log(req.body);
+  var metaData = new Map();
+  function_list.push(function(callback){
+      books.search(req.body.searchInput,options_for_key_search("subject",0,6), function(err, data) {
+      if(err){
+       // callback(err, null);
+      } else {
+        callback(err, data);
+        metaData.set("Search results for " + req.body.searchInput + " in ",data);
+      }
+    });
+  })
+  async.parallel(function_list, function(err){
+    if(err){
+      console.log(err);
+    } else {
+      console.log("META DATA: " + metaData);
+      res.render('home', {books: metaData, title: 'SeniorClub'});
+    }
+  })
+})
+
 app.get('/home',(req,res)=> {
-  var query = bookKeywords[random_int(bookKeywords.length)];
-  console.log(query);
-  books.search(query,options_for_key_search(random_int(5)), function(err, data) {
-    var url = data[0];
-    url = url || {thumbnail:"https://images-na.ssl-images-amazon.com/images/I/41P-CfLMjwL._SX323_BO1,204,203,200_.jpg"}
-    res.render('home', {posterurl: url.thumbnail, title: 'SeniorClub'});
-  });
+  //console.log(req.body);
+  var metaData = new Map();
+  for (let keyword of bookKeywords){
+    function_list.push(function(callback){
+      //console.log(keyword);
+      books.search(keyword,options_for_key_search("subject",0,6), function(err, data) {
+      if(err){
+       // callback(err, null);
+      } else {
+        callback(err, data);
+        metaData.set(keyword,data);
+      }
+    });
+    })
+  }
+  async.parallel(function_list, function(err){
+    if(err){
+      console.log(err);
+    } else {
+      console.log("META DATA: " + metaData);
+      console.log(metaData.keys());
+      res.render('home', {books: metaData, title: 'SeniorClub'});
+    }
+  })
 })
 
 app.post('/findMovie',(req,res)=> {
 	var params = create_omdb_params(req.body.movieTitle);
 	omdb.get(params, function(err, data) {
-		data = data ||
+		data = data || 
 		   {Poster: "https://images.costco-static.com/ImageDelivery/imageService?profileId=12026540&imageId=9555-847__1&recipeName=350"}
 		res.render('media', {posterurl: data.Poster, title: 'Your Media'});
 	});
 })
 
-app.post('/findBook',(req,res)=> {
-  console.log(req.body.bookTitle);
+app.post('/findBook',(req,res)=> {  
+  //console.log(req.body.bookTitle);
   books.search(req.body.bookTitle, function(err, data) {
     var url = data[0];
     url = url || {thumbnail:"https://www.iredell.lib.nc.us/ImageRepository/Document?documentID=441"}
@@ -184,23 +252,6 @@ app.post('/findBook',(req,res)=> {
   });
 })
 
-app.post('/hook',helloDFController.respondToDF)
-
-app.post('/home',(req,res)=> {
-  var query = bookKeywords[random_int(bookKeywords.length)];
-  console.log(query);
-  books.search(query,options_for_key_search(random_int(5)), function(err, data) {
-    var url = data[0];
-    url = url || {thumbnail:"https://images-na.ssl-images-amazon.com/images/I/41P-CfLMjwL._SX323_BO1,204,203,200_.jpg"}
-    res.render('home', {posterurl: url.thumbnail, title: 'SeniorClub'});
-  });
-})
-
-app.get('/profile', function(req, res) {
-  res.render('profile', {
-    user : req.user // get the user out of session and pass to template
-  });
-});
 
 /*
 app.get('/media', mediaController.getAllNotes );
@@ -208,7 +259,8 @@ app.post('/searchMedia', mediaController.saveNote);
 app.post('/searchMedia', mediaController.deleteNote);
 */
 app.use('/', function(req, res, next) {
-  res.render('home', { title: 'SeniorClub' });
+  console.log("in / controller")
+  res.render('index', { title: 'SeniorClub' });
 });
 
 // catch 404 and forward to error handler
@@ -228,6 +280,7 @@ app.use(function(err, req, res, next) {
 });
 
 app.use(bodyParser.json());
+
 
 console.log("before hook...");
 app.use('/hook', function(req, res){
@@ -252,5 +305,6 @@ function process_request(req,res){
     "followupEventInput":{}
   })
 }
+
 
 module.exports = app;
