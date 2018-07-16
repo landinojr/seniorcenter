@@ -184,6 +184,9 @@ function fill_with_media(numPerRow){
 }
 
 function general_omdb_params(text, type){
+  if (type === "TV Show"){
+    type = "series";
+  }
   return {
     apiKey: 'f7cb9dc5',
     type: type.toLowerCase(),
@@ -251,8 +254,10 @@ app.post('/home',(req,res)=> {
         console.log(err);
         res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
       } else {
-        console.log("MOVIE DATA: " + data);
-        res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, movieData: data, books: metaData, title: 'SeniorClub'});
+
+        //console.log(data);
+        //console.log(data.Search);
+        res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, movieData: data.Search, books: metaData, title: 'SeniorClub'});
       }
     })
   }
