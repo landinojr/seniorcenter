@@ -19,10 +19,13 @@ const async = require('async');
 
 //Suggestion keywords
 var bookKeywords = ["fiction","cooking","survival","physics","art"];
+var movieKeywords = ["IT","Touching the void","The hustler"];
+var metaData = new Map();
 //Session state
 var auth2;
 var signedIn = false;
 const function_list = [];
+var searchData;
 
 //Google authentication
 var initClient = function() {
@@ -61,6 +64,7 @@ function get_posterURL(title){
 function options_for_key_search(searchField,shift,max){
   //declare and return functions 
   var options = {
+    //key: "AIzaSyDfYJlzqCDNTa7ScwfTGm3gnxFkRFO4JBA",
     field: searchField,
     limit: max,
     offset: shift,
@@ -118,11 +122,29 @@ function search_book_title(title){
     if ( ! error ) {
         //console.log(data[0]);
         save_book_from_data(data[0])
-    } else {
-        console.log(error);
-    }
-  });
+            } else {
+                console.log(error);
+            }
+    });
 }
+
+function field_name(input){
+switch(input){
+  case "Title":
+    return "intitle";
+    break;
+  case "Topic":
+    return "subject"
+    break;
+  case "Creator":
+    return "author";
+    break;
+  default:
+    return "intitle";
+    break;
+  }
+}
+
 
 function save_book_from_data(data){
   //Create new book object and display in console
@@ -141,6 +163,33 @@ function save_book_from_data(data){
   console.log("Book data saved!");
 }
 
+function fill_with_media(numPerRow){
+    for (let keyword of bookKeywords){
+    if (!metaData.has(keyword)){
+      function_list.push(function(callback){
+      console.log(function_list.length);
+      //console.log(keyword);
+      books.search(keyword,options_for_key_search("subject",0,numPerRow), function(err, data) {
+      if (data) console.log("Subject search preformed, got " + data.length + " results");
+      if(err){
+        callback(err);
+      } else {
+        callback(err, data);
+        metaData.set(keyword,data);
+      }
+    });
+    })
+    }
+  }
+}
+
+function general_omdb_params(text, type){
+  return {
+    apiKey: 'f7cb9dc5',
+    type: type.toLowerCase(),
+    query: text
+  }
+}
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -185,44 +234,33 @@ app.get('/findBook',(req,res)=> {
 })
 
 app.post('/home',(req,res)=> {
-  //console.log(req.body);
-  var metaData = new Map();
-  function_list.push(function(callback){
-      books.search(req.body.searchInput,options_for_key_search("subject",0,6), function(err, data) {
-      if(err){
-       // callback(err, null);
-      } else {
-        callback(err, data);
-        metaData.set("Search results for " + req.body.searchInput + " in ",data);
+  console.log(req.body);
+  fill_with_media(5);
+  if (req.body.mediaType === "Book"){
+    books.search(req.body.searchInput,options_for_key_search(field_name(req.searchType),0,4), function(err, data) {
+      if (data){
+        console.log(data[0].title)
+        res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, searchData: data, books: metaData, title: 'SeniorClub'});
+      }else{
+        res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
       }
     });
-  })
-  async.parallel(function_list, function(err){
-    if(err){
-      console.log(err);
-    } else {
-      console.log("META DATA: " + metaData);
-      res.render('home', {books: metaData, title: 'SeniorClub'});
-    }
-  })
+  }else{
+    omdb.search(general_omdb_params(req.body.searchInput, req.body.mediaType), function(err, data) {
+      if(err){
+        console.log(err);
+        res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
+      } else {
+        console.log("MOVIE DATA: " + data);
+        res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, movieData: data, books: metaData, title: 'SeniorClub'});
+      }
+    })
+  }
 })
 
 app.get('/home',(req,res)=> {
   //console.log(req.body);
-  var metaData = new Map();
-  for (let keyword of bookKeywords){
-    function_list.push(function(callback){
-      //console.log(keyword);
-      books.search(keyword,options_for_key_search("subject",0,6), function(err, data) {
-      if(err){
-       // callback(err, null);
-      } else {
-        callback(err, data);
-        metaData.set(keyword,data);
-      }
-    });
-    })
-  }
+  fill_with_media(5);
   async.parallel(function_list, function(err){
     if(err){
       console.log(err);
@@ -260,7 +298,7 @@ app.post('/searchMedia', mediaController.deleteNote);
 */
 app.use('/', function(req, res, next) {
   console.log("in / controller")
-  res.render('index', { title: 'SeniorClub' });
+  res.render('home', { title: 'SeniorClub' });
 });
 
 // catch 404 and forward to error handler
