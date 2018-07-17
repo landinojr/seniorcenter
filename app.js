@@ -13,6 +13,7 @@ var books = require('google-books-search');
 const Movie = require('./models/movie');  
 const Book = require('./models/Book');
 const async = require('async');
+const reload = require ('reload')
 
 //Controllers
 //const mediaController = require('./controllers/mediaController');
@@ -167,7 +168,7 @@ function fill_with_media(numPerRow){
     for (let keyword of bookKeywords){
     if (!metaData.has(keyword)){
       function_list.push(function(callback){
-      console.log(function_list.length);
+      //console.log(function_list.length);
       //console.log(keyword);
       books.search(keyword,options_for_key_search("subject",0,numPerRow), function(err, data) {
       if (data) console.log("Subject search preformed, got " + data.length + " results");
@@ -183,10 +184,27 @@ function fill_with_media(numPerRow){
   }
 }
 
+function chage_in_keywords(x,y){
+  var temp = bookKeywords[y];
+  bookKeywords[y] = bookKeywords[x];
+  bookKeywords[x] = temp;
+}
+
+function add_keyword(keyword){
+  //test if it has results or already exists first
+  bookKeywords.push(keyword);
+}
+
+function remove_keyword(keyword){
+  //test if it is a keyword first then splice
+  bookKeywords.push(keyword);
+}
+
 function general_omdb_params(text, type){
   if (type === "TV Show"){
     type = "series";
   }
+  console.log(type);
   return {
     apiKey: 'f7cb9dc5',
     type: type.toLowerCase(),
@@ -243,21 +261,45 @@ app.post('/home',(req,res)=> {
     books.search(req.body.searchInput,options_for_key_search(field_name(req.searchType),0,4), function(err, data) {
       if (data){
         console.log(data[0].title)
-        res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, searchData: data, books: metaData, title: 'SeniorClub'});
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, searchData: data, books: metaData, title: 'SeniorClub'});
       }else{
-        res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
       }
     });
   }else{
     omdb.search(general_omdb_params(req.body.searchInput, req.body.mediaType), function(err, data) {
       if(err){
         console.log(err);
-        res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
       } else {
+        console.log(data.Search);
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, movieData: data.Search, books: metaData, title: 'SeniorClub'});
+      }
+    })
+  }
+})
 
-        //console.log(data);
-        //console.log(data.Search);
-        res.render('home', {searchType: req.body.mediaType, searchInput: req.body.searchInput, movieData: data.Search, books: metaData, title: 'SeniorClub'});
+app.post('/home/addtopic',(req,res)=> {
+  reload('home');
+  console.log(req.body);
+  fill_with_media(5);
+  if (req.body.mediaType === "Book"){
+    books.search(req.body.searchInput,options_for_key_search(field_name(req.searchType),0,4), function(err, data) {
+      if (data){
+        console.log(data[0].title)
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, searchData: data, books: metaData, title: 'SeniorClub'});
+      }else{
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
+      }
+    });
+  }else{
+    omdb.search(general_omdb_params(req.body.searchInput, req.body.mediaType), function(err, data) {
+      if(err){
+        console.log(err);
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
+      } else {
+        console.log(data.Search);
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, movieData: data.Search, books: metaData, title: 'SeniorClub'});
       }
     })
   }
@@ -271,8 +313,8 @@ app.get('/home',(req,res)=> {
       console.log(err);
     } else {
       console.log("META DATA: " + metaData);
-      console.log(metaData.keys());
-      res.render('home', {books: metaData, title: 'SeniorClub'});
+      console.log(bookKeywords);
+      res.render('home', {keywordsOrder: bookKeywords, books: metaData, title: 'SeniorClub'});
     }
   })
 })
@@ -303,7 +345,7 @@ app.post('/searchMedia', mediaController.deleteNote);
 */
 app.use('/', function(req, res, next) {
   console.log("in / controller")
-  res.render('home', { title: 'SeniorClub' });
+  res.render('home', { books:metaData, title: 'SeniorClub' });
 });
 
 // catch 404 and forward to error handler
