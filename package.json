@@ -19,7 +19,8 @@
     "morgan": "~1.9.0",
     "omdb-client": "^2.0.0",
     "pug": "^2.0.0-beta11",
-    "readline-sync": "^1.4.9"
+    "readline-sync": "^1.4.9",
+    "reload": "^2.3.0"
   },
   "main": "app.js",
   "devDependencies": {},
