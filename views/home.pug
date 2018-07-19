@@ -37,22 +37,26 @@ block content
         br
     each keyword in keywordsOrder
         - let topic = books.get(keyword)
-            font(color = 'white', size = '8', position = 'relative')
+            font(color = 'white', size = '8', position = 'relative') 
                 .btn-group
-                    button.btn.btn-info.btn-lg.dropdown-toggle(type='button', style='font-size : 30px', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-                        b #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
+                    button.btn.btn-primary.btn-lg.dropdown-toggle(type='button', style='font-size : 30px', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
+                        b #{keyword.charAt(0).toUpperCase() + keyword.slice(1)} 
                     .dropdown-menu
                         - for (let [key, topic] of books)
                             - if (key !== keyword)
-                                a.dropdown-item(href='#') #{key}
-                        form.corm-control(id = 'form1', action = '/home', method = 'post')
-                            .form-row
-                                input.form-control(type='text', placeholder='Add topic')
-                                button.btn.btn-default(type='submit')
+                                form(action='/home', method='post')
+                                    - var topics = [key,keyword];
+                                    button(name = 'topicDelete', value=key, type='submit', style='float: right; background:transparent; border:none; outline:none;')
+                                        i.fa.fa-trash-o
+                                    button(name = 'topicSwitch', value=topics, type='submit', style='overflow: hidden; background:transparent; border:none; outline:none;')
+                                        a.dropdown-item #{key}
+                        form(action='/home', method='post')
+                            button.btn.btn-default(type='submit', style='float: right')
                                     i.fa.fa-search
+                            div(style='overflow: hidden; padding-right: .5em; padding-left: .5em;')
+                                input.form-control.mr-sm-2(type='text', name='searchTopic', style='width: 100%;', placeholder='Add Topic')
             font(color = 'white', size = '6', position = 'relative')
             .card-deck
-              if topic
                 each book in topic
                     .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 13rem;')
                         a(href=book.link)
@@ -60,7 +64,7 @@ block content
                         if book.averageRating
                             - var n = book.averageRating;
                             .row.justify-content-center.no-gutters
-                                while n > 0
+                                while n > 0.5
                                     .col-2
                                         i.fa.fa-star(style='font-size:24px; color: gold')
                                     if n < 1
