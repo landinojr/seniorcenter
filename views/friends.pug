@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  each f in user.friends
+    .row
+      .col-2
+        img(src = f.googlepictureurl)
+      .col-10
+        .row
+          h2 f.googlename
+        .row
+          //will show if user is online
+    //later: dropdown upon click

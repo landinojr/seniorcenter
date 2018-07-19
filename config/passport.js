@@ -51,8 +51,9 @@ exports.test = function(passport) {
                    = new User(
                        {googleid: profile.id,
                         googletoken: token,
-                        googlename:profile.displayName,
-                        googleemail:profile.emails[0].value,
+                        googlename: profile.displayName,
+                        googleemail: profile.emails[0].value,
+                        googlepictureurl: 'http://picasaweb.google.com/data/entry/api/user/' + profile.id + '?alt=json'
                       });
 
                   // set all of the relevant information

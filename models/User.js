@@ -8,6 +8,11 @@ var userSchema = mongoose.Schema( {
   googletoken: String,
   googlename: String,
   googleemail: String,
+  googlepictureurl: String,
+  readBooks: [],
+  watchedMovies: [],
+  watchedTV: [],
+  friends: [],
   mediaServices: [],
   genres: [],
   mediaPreferences: []
