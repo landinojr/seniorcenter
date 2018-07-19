@@ -14,94 +14,57 @@ const Movie = require('./models/movie');
 const Book = require('./models/Book');
 const async = require('async');
 const reload = require ('reload')
-//VOICE CLIENT
-//var SinchClient = require('sinch-rtc');
+
 
 //Controllers
+
 //const mediaController = require('./controllers/mediaController');
+
+
 //Suggestion keywords
 var bookKeywords = ["fiction","cooking","survival","physics","art"];
 var movieKeywords = ["IT","Touching the void","The hustler"];
-var readBooks = [];
-var watchedMovies = [];
 var metaData = new Map();
 //Session state
 var auth2;
 var signedIn = false;
 const function_list = [];
 var searchData;
-const passport = require('passport')
-//const configPassport = require('./config/passport')
-//configPassport.test(passport);
 
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-
-// load up the user model
-var User  = require('./models/user');
-
-// load the auth variables
-var configAuth = require('./config/auth');
-
-passport.use(new GoogleStrategy({
-
-    clientID        : configAuth.googleAuth.clientID,
-    clientSecret    : configAuth.googleAuth.clientSecret,
-    callbackURL     : configAuth.googleAuth.callbackURL,
-
-},
-
-function(token, refreshToken, profile, done) {
-
-    // make the code asynchronous
-    // User.findOne won't fire until we have all our data back from Google
-    process.nextTick(function() {
-       console.log("looking for userid")
-        // try to find the user based on their google id
-        User.findOne({ 'googleid' : profile.id }, function(err, user) {
-            if (err)
-                return done(err);
-            if (user) {
-                console.log('user found: ' + user)
-                // if a user is found, log them in
-                return done(null, user);
-            } else {
-                console.log('no user found - creating new user')
-                console.dir(profile)
-                // if the user isnt in our database, create a new user
-                var newUser
-                 = new User(
-                     {googleid: profile.id,
-                      googletoken: token,
-                      googlename:profile.displayName,
-                      googleemail:profile.emails[0].value,
-                    });
-
-                // save the user
-                newUser.save(function(err) {
-                  console.log("saving the new user")
-                    if (err)
-                        throw err;
-                    return done(null, newUser);
-                });
-            }
+//Google authentication
+var initClient = function() {
+    gapi.load('auth2', function(){
+        auth2 = gapi.auth2.init({
+            client_id: '323237114211-bvkkag3t6ddo9dcvdf7p0laoe99b6kap.apps.googleusercontent.com'
         });
+        // Attach the click handler to the sign-in button
+        auth2.attachClickHandler('signin-button', {}, onSuccess, onFailure);
     });
-}));
+};
 
-// used to serialize the user for the session
-passport.serializeUser(function(user, done) {
-  console.log('serializing user ' + user)
-    done(null, user.id);
-});
+var onSuccess = function(user) {
+    console.log('Signed in as ' + user.getBasicProfile().getName());
+    signedIn = true;
+ };
 
-// used to deserialize the user
-passport.deserializeUser(function(id, done) {
-  console.log('in deserializeUser')
-    User.findById(id, function(err, user) {
-        done(err, user);
+var onFailure = function(error) {
+    console.log(error);
+};
+
+function signOut() {
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
     });
-});
+  }
+
 //Database + API functions
+function get_posterURL(title){
+	var params = create_omdb_params(title);
+	omdb.get(params, function(err, data) {
+		return data.Poster;
+	});
+}
+
 function options_for_key_search(searchField,shift,max){
   //declare and return functions
   var options = {
@@ -129,8 +92,45 @@ function create_omdb_params(title){
 	return params;
 }
 
+function display_data(){
+	//Does general find and prints out title of each existing element
+	Movie.find({},function(err, res){
+		for (var e in res){
+			//Print title of movie object in database
+			console.log(res[e].title);
+		}
+	});
+}
+
+function save_movie_from_data(data){
+	//Create new movie object and display in console
+	console.log("Saving movie data...");
+	var new_movie = new Movie( {
+    	movieid: data.imdbID,
+  		title: data.Title,
+  		year: data.Year,
+  		posterurl: data.Poster
+  } )
+	//Save new movie object and display in console
+	new_movie.save(function(err,result){
+		console.log(new_movie.title + " data saved!");
+	});
+
+}
+
 /*GOOGLE BOOKS API*/
 //var book_info = readline.question("Search for a book: ");
+
+function search_book_title(title){
+  books.search(options_for_key_search(), function(error, data) {
+    if ( ! error ) {
+        //console.log(data[0]);
+        save_book_from_data(data[0])
+            } else {
+                console.log(error);
+            }
+    });
+}
 
 function field_name(input){
 switch(input){
@@ -149,6 +149,24 @@ switch(input){
   }
 }
 
+
+function save_book_from_data(data){
+  //Create new book object and display in console
+  console.log("Saving book data...");
+  var new_book = new Book( {
+      title: data.title,
+      authors: data.authors,
+      publishedDate: data.publishedDate,
+      description: data.description,
+      pageCount: data.pageCount,
+      posterURL: data.thumbnail,
+      link: data.link
+  } )
+  //Save new movie object and display in console
+  new_book.save();
+  console.log("Book data saved!");
+}
+
 function fill_with_media(numPerRow){
     for (let keyword of bookKeywords){
     if (!metaData.has(keyword)){
@@ -156,21 +174,12 @@ function fill_with_media(numPerRow){
       //console.log(function_list.length);
       //console.log(keyword);
       books.search(keyword,options_for_key_search("subject",0,numPerRow), function(err, data) {
+      if (data) console.log("Subject search preformed, got " + data.length + " results");
       if(err){
         callback(err);
       } else {
-        if (data) {
-          console.log("Subject search on " + keyword + " got " + data.length + "/" + numPerRow + " results");
-          if (data.length > 0){
-              metaData.set(keyword,data);
-          }else{
-              remove_keyword(keyword);
-          }
-          callback(err, data);
-        }else{
-          remove_keyword(keyword);
-          console.log("No results for " + keyword);
-        }
+        callback(err, data);
+        metaData.set(keyword,data);
       }
     });
     })
@@ -178,10 +187,7 @@ function fill_with_media(numPerRow){
   }
 }
 
-function switch_keywords(keyX,keyY){
-  var x = bookKeywords.indexOf(keyX);
-  var y = bookKeywords.indexOf(keyY);
-  console.log(x + " " + y)
+function chage_in_keywords(x,y){
   var temp = bookKeywords[y];
   bookKeywords[y] = bookKeywords[x];
   bookKeywords[x] = temp;
@@ -189,18 +195,12 @@ function switch_keywords(keyX,keyY){
 
 function add_keyword(keyword){
   //test if it has results or already exists first
-  bookKeywords.splice(0, 0, keyword);
+  bookKeywords.push(keyword);
 }
 
 function remove_keyword(keyword){
-  console.log(keyword);
   //test if it is a keyword first then splice
-  if (metaData.has(keyword)){
-    metaData.delete(keyword);
-  }
-  console.log(metaData.keys())
-  bookKeywords.splice(bookKeywords.indexOf(keyword), 1);
-  console.log(bookKeywords);
+  bookKeywords.push(keyword);
 }
 
 function general_omdb_params(text, type){
@@ -220,10 +220,12 @@ const usersRouter = require('./routes/users');
 const formsRouter = require('./routes/forms');
 
 var app = express();
+const helloDFController = require('./controllers/helloDFController')
 
 const mongoose = require( 'mongoose' );
 // here is where we connect to the database!
-mongoose.connect( 'mongodb://localhost:27017/seniorcenter' );
+const mongoDB = process.env.MONGO_URI || 'mongodb://localhost:27017/seniorcenter';
+mongoose.connect( mongoDB );
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
@@ -240,61 +242,36 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({ secret: 'zzbbyanana' }));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(passport.initialize());
-app.use(passport.session());
 
-//app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/forms', formsRouter);
 
-//check login status
-app.use(function(req, res, next){
-  if(req.isAuthenticated()){
-    res.locals.isLoggedIn = true;
-  }
-  next();
+app.get('/media',(req,res)=> {
+	res.render('media');
 })
 
-app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
-
-app.get('/auth/google/callback', passport.authenticate('google', {
-  successRedirect: '/',
-  failureRedirect: '/'
-}))
-
-app.get('/profile',(req,res)=> {
-  res.render('profile');
+app.get('/findMovie',(req,res)=> {
+	res.render('media');
 })
 
-app.get('/logout', function(req, res){
-  req.logout();
-  res.redirect('/');
+app.get('/findBook',(req,res)=> {
+  res.render('media');
 })
 
 app.post('/home',(req,res)=> {
   console.log(req.body);
-  //TOPIC RELATED STUFF
-  if (req.body.searchTopic){
-    if (!metaData.has(req.body.searchTopic)) add_keyword(req.body.searchTopic);
-  }
-  if (req.body.topicSwitch){
-    var topics = JSON.parse(req.body.topicSwitch);
-    //console.log(topics);
-    switch_keywords(topics[0], topics[1]);
-  }
-  if (req.body.topicDelete){
-    remove_keyword(req.body.topicDelete);
-  }
   fill_with_media(5);
-  //SEARCH RELATED STUFF
-  if (req.body.mediaType && req.body.mediaType === "Book"){
+  if (req.body.mediaType === "Book"){
     books.search(req.body.searchInput,options_for_key_search(field_name(req.searchType),0,4), function(err, data) {
       if (data){
-        //console.log(data[0].title)
+        console.log(data[0].title)
         res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, searchData: data, books: metaData, title: 'SeniorClub'});
       }else{
         res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
       }
     });
-  }else if (req.body.mediaType){
+  }else{
     omdb.search(general_omdb_params(req.body.searchInput, req.body.mediaType), function(err, data) {
       if(err){
         console.log(err);
@@ -304,17 +281,35 @@ app.post('/home',(req,res)=> {
         res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, movieData: data.Search, books: metaData, title: 'SeniorClub'});
       }
     })
-  }else{
-  //NON SPECIFIC RENDERER
-  async.parallel(function_list, function(err){
-    if(err){
-      console.log(err);
-    } else {
-      res.render('home', {keywordsOrder: bookKeywords, books: metaData, title: 'SeniorClub'});
-    }
-  })
   }
 })
+
+app.post('/home/addtopic',(req,res)=> {
+  reload('home');
+  console.log(req.body);
+  fill_with_media(5);
+  if (req.body.mediaType === "Book"){
+    books.search(req.body.searchInput,options_for_key_search(field_name(req.searchType),0,4), function(err, data) {
+      if (data){
+        console.log(data[0].title)
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, searchData: data, books: metaData, title: 'SeniorClub'});
+      }else{
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
+      }
+    });
+  }else{
+    omdb.search(general_omdb_params(req.body.searchInput, req.body.mediaType), function(err, data) {
+      if(err){
+        console.log(err);
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: metaData, title: 'SeniorClub'});
+      } else {
+        console.log(data.Search);
+        res.render('home', {keywordsOrder: bookKeywords, searchType: req.body.mediaType, searchInput: req.body.searchInput, movieData: data.Search, books: metaData, title: 'SeniorClub'});
+      }
+    })
+  }
+})
+
 
 app.get('/home',(req,res)=> {
   //console.log(req.body);
@@ -323,25 +318,44 @@ app.get('/home',(req,res)=> {
     if(err){
       console.log(err);
     } else {
-      console.log(metaData.keys());
+      console.log("META DATA: " + metaData);
       console.log(bookKeywords);
       res.render('home', {keywordsOrder: bookKeywords, books: metaData, title: 'SeniorClub'});
     }
   })
 })
 
+app.post('/findMovie',(req,res)=> {
+	var params = create_omdb_params(req.body.movieTitle);
+	omdb.get(params, function(err, data) {
+		data = data ||
+		   {Poster: "https://images.costco-static.com/ImageDelivery/imageService?profileId=12026540&imageId=9555-847__1&recipeName=350"}
+		res.render('media', {posterurl: data.Poster, title: 'Your Media'});
+	});
+})
+
+app.post('/findBook',(req,res)=> {
+  //console.log(req.body.bookTitle);
+  books.search(req.body.bookTitle, function(err, data) {
+    var url = data[0];
+    url = url || {thumbnail:"https://www.iredell.lib.nc.us/ImageRepository/Document?documentID=441"}
+    res.render('media', {posterurl: url.thumbnail, title: 'Your Media'});
+  });
+})
+console.log("we are in the hook")
+
+app.post('/hook',helloDFController.respondToDF)
+
+
+
+/*
+app.get('/media', mediaController.getAllNotes );
+app.post('/searchMedia', mediaController.saveNote);
+app.post('/searchMedia', mediaController.deleteNote);
+*/
 app.use('/', function(req, res, next) {
-  console.log("in / controller");
-  fill_with_media(5);
-  async.parallel(function_list, function(err){
-    if(err){
-      console.log(err);
-    } else {
-      console.log(metaData.keys());
-      console.log(bookKeywords);
-      res.render('home', {keywordsOrder: bookKeywords, books: metaData, title: 'SeniorClub'});
-    }
-  })
+  console.log("in / controller")
+  res.render('home', { books:metaData, title: 'SeniorClub' });
 });
 
 // catch 404 and forward to error handler
@@ -361,5 +375,9 @@ app.use(function(err, req, res, next) {
 });
 
 app.use(bodyParser.json());
+
+
+
+
 
 module.exports = app;
