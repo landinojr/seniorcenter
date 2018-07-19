@@ -10,10 +10,82 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 var books = require('google-books-search');
 //Models
-const Movie = require('./models/movie');  
+const Movie = require('./models/movie');
 const Book = require('./models/Book');
 const async = require('async');
 const reload = require ('reload')
+
+// here we set up authentication with passport
+const passport = require('passport')
+//const configPassport = require('./config/passport')
+//configPassport.test(passport);
+
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+
+// load up the user model
+var User  = require('./models/user');
+
+// load the auth variables
+var configAuth = require('./config/auth');
+
+passport.use(new GoogleStrategy({
+
+    clientID        : configAuth.googleAuth.clientID,
+    clientSecret    : configAuth.googleAuth.clientSecret,
+    callbackURL     : configAuth.googleAuth.callbackURL,
+
+},
+function(token, refreshToken, profile, done) {
+
+    // make the code asynchronous
+    // User.findOne won't fire until we have all our data back from Google
+    process.nextTick(function() {
+       console.log("looking for userid")
+        // try to find the user based on their google id
+        User.findOne({ 'googleid' : profile.id }, function(err, user) {
+            if (err)
+                return done(err);
+            if (user) {
+                console.log('user found: ' + user)
+                // if a user is found, log them in
+                return done(null, user);
+            } else {
+                console.log('no user found - creating new user')
+                console.dir(profile)
+                // if the user isnt in our database, create a new user
+                var newUser
+                 = new User(
+                     {googleid: profile.id,
+                      googletoken: token,
+                      googlename:profile.displayName,
+                      googleemail:profile.emails[0].value,
+                    });
+
+                // save the user
+                newUser.save(function(err) {
+                  console.log("saving the new user")
+                    if (err)
+                        throw err;
+                    return done(null, newUser);
+                });
+            }
+        });
+    });
+}));
+
+// used to serialize the user for the session
+passport.serializeUser(function(user, done) {
+  console.log('serializing user ' + user)
+    done(null, user.id);
+});
+
+// used to deserialize the user
+passport.deserializeUser(function(id, done) {
+  console.log('in deserializeUser')
+    User.findById(id, function(err, user) {
+        done(err, user);
+    });
+});
 
 //Controllers
 //const mediaController = require('./controllers/mediaController');
@@ -22,37 +94,37 @@ const reload = require ('reload')
 var bookKeywords = ["fiction","cooking","survival","physics","art"];
 var movieKeywords = ["IT","Touching the void","The hustler"];
 var metaData = new Map();
-//Session state
-var auth2;
-var signedIn = false;
+// //Session state
+// var auth2;
+// var signedIn = false;
 const function_list = [];
 var searchData;
 
-//Google authentication
-var initClient = function() {
-    gapi.load('auth2', function(){
-        auth2 = gapi.auth2.init({
-            client_id: '323237114211-bvkkag3t6ddo9dcvdf7p0laoe99b6kap.apps.googleusercontent.com'
-        });
-        // Attach the click handler to the sign-in button
-        auth2.attachClickHandler('signin-button', {}, onSuccess, onFailure);
-    });
-};
-
-var onSuccess = function(user) {
-    console.log('Signed in as ' + user.getBasicProfile().getName());
-    signedIn = true;
- };
-
-var onFailure = function(error) {
-    console.log(error);
-};
-
-function signOut() {
-    auth2.signOut().then(function () {
-      console.log('User signed out.');
-    });
-  }
+// //Google authentication
+// var initClient = function() {
+//     gapi.load('auth2', function(){
+//         auth2 = gapi.auth2.init({
+//             client_id: '323237114211-bvkkag3t6ddo9dcvdf7p0laoe99b6kap.apps.googleusercontent.com'
+//         });
+//         // Attach the click handler to the sign-in button
+//         auth2.attachClickHandler('signin-button', {}, onSuccess, onFailure);
+//     });
+// };
+//
+// var onSuccess = function(user) {
+//     console.log('Signed in as ' + user.getBasicProfile().getName());
+//     signedIn = true;
+//  };
+//
+// var onFailure = function(error) {
+//     console.log(error);
+// };
+//
+// function signOut() {
+//     auth2.signOut().then(function () {
+//       console.log('User signed out.');
+//     });
+//   }
 
 //Database + API functions
 function get_posterURL(title){
@@ -63,13 +135,13 @@ function get_posterURL(title){
 }
 
 function options_for_key_search(searchField,shift,max){
-  //declare and return functions 
+  //declare and return functions
   var options = {
     //key: "AIzaSyDfYJlzqCDNTa7ScwfTGm3gnxFkRFO4JBA",
     field: searchField,
     limit: max,
     offset: shift,
-    type: 'books', 
+    type: 'books',
     order: 'relevance',
     lang: 'en'
   }
@@ -81,7 +153,7 @@ function random_int(max){
 }
 
 function create_omdb_params(title){
-	//declare and return functions 
+	//declare and return functions
 	var params = {
     	apiKey: 'f7cb9dc5',
     	title: title
@@ -112,7 +184,7 @@ function save_movie_from_data(data){
 	new_movie.save(function(err,result){
 		console.log(new_movie.title + " data saved!");
 	});
-	
+
 }
 
 /*GOOGLE BOOKS API*/
@@ -235,8 +307,57 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(session({ secret: 'zzbbyanana' }));
+app.use(session({
+  secret: 'zzbbyanana' ,
+  resave: false,
+  saveUninitialized: true,
+}));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+//check login status
+app.use(function(req, res, next){
+  if(req.isAuthenticated()){
+    res.locals.isLoggedIn = true;
+  }
+  next();
+})
+
+app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+
+app.get('/auth/google/callback', passport.authenticate('google', {
+  successRedirect: '/',
+  failureRedirect: '/'
+}))
+
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+})
+
+// app.get('/login/authorized',
+//   passport.authenticate('google', {
+//     successRedirect : '/',
+//     failureRedirect : '/loginerror'
+//   })
+// );
+
+// route middleware to make sure a user is logged in
+// function signedIn(req, res, next) {
+//     console.log("checking to see if they are authenticated!")
+//     // if user is authenticated in the session, carry on
+//     res.locals.loggedIn = false
+//     if (req.isAuthenticated()){
+//       console.log("user has been Authenticated")
+//       return next();
+//     } else {
+//       console.log("user has not been authenticated...")
+//       res.redirect('/login');
+//     }
+// }
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -322,13 +443,13 @@ app.get('/home',(req,res)=> {
 app.post('/findMovie',(req,res)=> {
 	var params = create_omdb_params(req.body.movieTitle);
 	omdb.get(params, function(err, data) {
-		data = data || 
+		data = data ||
 		   {Poster: "https://images.costco-static.com/ImageDelivery/imageService?profileId=12026540&imageId=9555-847__1&recipeName=350"}
 		res.render('media', {posterurl: data.Poster, title: 'Your Media'});
 	});
 })
 
-app.post('/findBook',(req,res)=> {  
+app.post('/findBook',(req,res)=> {
   //console.log(req.body.bookTitle);
   books.search(req.body.bookTitle, function(err, data) {
     var url = data[0];
