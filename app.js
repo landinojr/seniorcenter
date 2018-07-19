@@ -10,7 +10,7 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 var books = require('google-books-search');
 //Models
-const Movie = require('./models/movie');
+const Movie = require('./models/Movie');
 const Book = require('./models/Book');
 const async = require('async');
 const reload = require ('reload')
