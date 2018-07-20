@@ -22,18 +22,16 @@ block content
                     .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 13rem;')
                         a(href=book.link)
                             img.card-img-top(src=book.thumbnail, width="320",height="auto", alt=book.title)
+                        if book.averageRating
+                            - var j = book.averageRating;
                         .row.justify-content-center.no-gutters
-                            if book.averageRating
-                                - var j = book.averageRating;
-                                    while j > 0
-                                            .col-2
-                                                - if (j < 1 && j > 0)
-                                                    i.fa.fa-star-half(style='font-size:24px; color: gold')
-                                                - else
-                                                    i.fa.fa-star(style='font-size:24px; color: gold')
-                                            - j--;
-                            if isLoggedIn
-                                i.fa.fa-bookmark(style='font-size:24px;')
+                                while j > 0
+                                    .col-2
+                                        i.fa.fa-star(style='font-size:24px; color: gold')
+                                    if (j < 1 && j > 0)
+                                        .col-2
+                                            i.fa.fa-star-half(style='font-size:24px; color: gold')
+                                    - j--;
     else if searchInput
         font(color = 'white', size = '6', position = 'relative') No results for #{searchInput} in #{searchType}
         br
@@ -63,15 +61,13 @@ block content
                     .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 13rem;')
                         a(href=book.link)
                             img.card-img-top(src=book.thumbnail, width="320",height="auto")
-                        .row.justify-content-center.no-gutters
-                            if book.averageRating
-                                - var j = book.averageRating;
-                                    while j > 0
-                                            .col-2
-                                                - if (j < 1 && j > 0)
-                                                    i.fa.fa-star-half(style='font-size:24px; color: gold')
-                                                - else
-                                                    i.fa.fa-star(style='font-size:24px; color: gold')
-                                            - j--;
-                            if isLoggedIn
-                                i.fa.fa-bookmark(style='font-size:24px; color:white')
+                        if book.averageRating
+                            - var n = book.averageRating;
+                            .row.justify-content-center.no-gutters
+                                while n > 0.5
+                                    .col-2
+                                        i.fa.fa-star(style='font-size:24px; color: gold')
+                                    if n < 1
+                                        .col-2
+                                            i.fa.fa-star-half(style='font-size:24px; color: gold')
+                                    - n--;
