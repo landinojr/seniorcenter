@@ -1,21 +1,7 @@
 extends layout
 
 block content
-	.row
-		.col-sm-4
-			h1 #{user.googlename}
-	h2 Media preferences
-	#preferences
-		h3 Preferred media type(s):
-			ul
-				each m in user.mediaPreferences
-					li m
-		h3 Preferred genre(s):
-			ul
-				each g in user.genres
-					li g
-	h2 Media services
-	#services
-		ul
-			each m in user.mediaServices
-				li m
+    h1(class="blockquote text-center", action = "/home", font color='white')
+        br
+        font(color = 'white', size = '6') Welcome #{user.googlename}
+    img(src=user.imageUrl)
