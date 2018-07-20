@@ -260,6 +260,7 @@ app.get('/findBook',(req,res)=> {
 })
 
 app.post('/home',(req,res)=> {
+  console.log("")
   console.log(req.body);
   fill_with_media(5);
   if (req.body.mediaType === "Book"){
