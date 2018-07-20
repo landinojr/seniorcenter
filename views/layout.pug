@@ -20,6 +20,9 @@ html(lang="en")
               a(href="/logout") Log Out
             else
               a(href="/auth/google") Log In
+          if isLoggedIn
+            li.nav-item
+              a.nav-link(href='/profile') Profile
           li.nav-item
             a.nav-link(href='/media') Your Media
           li.nav-item
