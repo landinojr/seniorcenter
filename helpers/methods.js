@@ -1,6 +1,9 @@
 var MyData = [];
 var methods = require('../helpers/methods.js');
 var omdb = require('omdb-client');
+var books = require('google-books-search');
+var Book =require('../models/Book')
+
 exports.getMovie = function (data){
   const imdb = require('imdb-api');
 
@@ -23,9 +26,6 @@ exports.getMovie = function (data){
 //  }).then(console.log).catch(console.log);
 
 
-
-
-
 exports.save_movie_from_data = function (data){
 	//Create new movie object and display in console
 	console.log("Saving movie data...");
@@ -40,18 +40,19 @@ exports.save_movie_from_data = function (data){
 		console.log(new_movie.title + " data saved!");
 	});
 }
-exports.search_book_title = function(title){
+exports.search_book_title = function(title, callback){
   books.search(title, function(error, data) {
     if ( ! error ) {
         console.log(data[0]);
-        save_book_from_data(data[0])
+        methods.save_book_from_data(data[0], callback)
     } else {
         console.log(error);
+        callback(error, null);
     }
   });
 }
 
-exports.save_book_from_data = function(data){
+exports.save_book_from_data = function(data, callback){
   //Create new book object and display in console
   console.log("Saving book data...");
   var new_book = new Book( {
@@ -63,10 +64,15 @@ exports.save_book_from_data = function(data){
       posterURL: data.thumbnail,
       link: data.link
   });
+
   //Save new movie object and display in console
-  new_book.save = function(){
-  console.log("Book data saved!");
-  }
+  new_book.save(function(err){
+    if(err){
+      callback(err, null);
+    } else {
+      callback(null, new_book);
+    }
+  })
 }
 
 exports.create_omdb_params = function(title){
@@ -90,7 +96,7 @@ exports.get_posterURL = function(title){
 
 exports.getMovieData = function(title, callback) {
 	var params = methods.create_omdb_params(title);
-  
+
 	omdb.get(params, function(err, data) {
     if(err){
       callback(err, null);

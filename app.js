@@ -225,6 +225,7 @@ const helloDFController = require('./controllers/helloDFController')
 const mongoose = require( 'mongoose' );
 // here is where we connect to the database!
 const mongoDB = process.env.MONGO_URI || 'mongodb://localhost:27017/seniorcenter';
+console.log(mongoDB);
 mongoose.connect( mongoDB );
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));

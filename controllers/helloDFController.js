@@ -77,12 +77,12 @@ function proccess_request(req,res){
 
       //  console.log(daa.title)
         console.log("==========-------=====================")
-        console.log(data[0].title)
+        console.log(data.title)
         console.log("loading book...")
 
       //  output_String = data.Title + " " + data.Year + " " + data.Plot
         output_String = "your search has completed the movie you sarched for is "
-        + data[0].title + " and the author is "+ data[0].authors
+        + data.title + " and the author is "+ data.authors
 
         currData = data
         return res.json({
