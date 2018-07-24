@@ -53,7 +53,7 @@ function proccess_request(req,res){
       }
     })
   }else if(req.body.queryResult.intent.displayName === "add-friends" && req.body.queryResult.parameters["sys.given-name"]){
-      output_String = method.search_users(req.body.queryResult.parameters["sys.given-name"])
+      output_String = method.search_users(req.body.queryResult.parameters["sys.given-name"], callback)
 
     return res.json({
       "fulfillmentMessages": [],

@@ -132,6 +132,7 @@ exports.search_users = function(searchName, callback){
   User.findById(id_of_current_user, function(err, user) {
     if(!err){
       User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
+      return User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
     }
   });
 }
