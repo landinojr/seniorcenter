@@ -545,6 +545,8 @@ app.post('/home/:id',(req,res)=> {
     });
 })
 
+app.post('/hook', helloDFController.respondToDF)
+
 app.get('/home',(req,res)=> {
   //console.log(req.body);
   if(is_new_media()){
