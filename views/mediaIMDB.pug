@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    h1(class="blockquote text-center", action = "/home", font color='white')
+        br
+        font(color = 'white', size = '6') #{movieData.Title}
+    if movieData.Poster
+        a(href=movieData.Websiteink)
+            img(src=movieData.Poster)
+    br
+    font(color = 'white', size = '4', position = 'relative')  #{movieData.Plot}
+    br
+    font(color = 'white', size = '4', position = 'relative')  
+        br
+        | Featuring #{movieData.Actors}
+    if isLoggedIn
+        form(action='/home/movie/' + movieData.imdbID, method='post')
+            button.btn.btn-default(type='submit', style='float: right')
+                i.fa.fa-bookmark(style='font-size:24px; color:green')

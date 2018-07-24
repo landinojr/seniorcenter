@@ -1,18 +1,15 @@
 extends layout
 
 block content
-	h1= title
-	p Welcome to #{title}
-	form(method="post", action = "/findMovie")
-		label Search for Movie:
-		input(type ="text", name = "movieTitle")
-		br
-		input(type= "submit")
-	form(method="post", action = "/findBook")
-		label Search for Book:
-		input(type ="text", name = "bookTitle")
-		br
-		input(type= "submit")
-	img(src=posterurl)
-
-
+    h1(class="blockquote text-center", action = "/home", font color='white')
+        br
+        font(color = 'white', size = '6') #{volume.title}
+    if volume.thumbnail
+        a(href=volume.link)
+            img(src=volume.thumbnail)
+    br
+    font(color = 'white', size = '4', position = 'relative')  #{volume.description}
+    if isLoggedIn
+        form(action='/home/'+volume.id, method='post')
+            button.btn.btn-default(type='submit', style='float: right')
+                i.fa.fa-bookmark(style='font-size:24px; color:green')

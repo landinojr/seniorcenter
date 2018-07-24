@@ -12,7 +12,7 @@ block content
                     -a++;
                     - if (a<6)
                         .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 13rem;')
-                            a(href=movie.Website)
+                            a(href='/home/movie/' + movie.imdbID)
                                 font(color = 'white', size = '2', position = 'relative')
                                     img.card-img-top(src=movie.Poster, width="320",height="auto", alt=movie.Title)
     else if searchData
@@ -58,11 +58,10 @@ block content
                             div(style='overflow: hidden; padding-right: .5em; padding-left: .5em;')
                                 input.form-control.mr-sm-2(type='text', name='searchTopic', style='width: 100%;', placeholder='Add Topic')
             font(color = 'white', size = '6', position = 'relative')
-              .card-deck
-              
+            .card-deck
                 each book in topic
                     .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 13rem;')
-                        a(href=book.link)
+                        a(href='/home/'+book.id)
                             img.card-img-top(src=book.thumbnail, width="320",height="auto")
                         .row.justify-content-center.no-gutters
                             if book.averageRating
