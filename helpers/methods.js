@@ -123,3 +123,15 @@ exports.options_for_key_search = function(shift){
 exports.random_int = function(max){
   return Math.floor(Math.random()*max);
 }
+
+
+
+
+exports.search_users = function(searchName, callback){
+  var nameArr = searchName.split(" ");
+  User.findById(id_of_current_user, function(err, user) {
+    if(!err){
+      User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
+    }
+  });
+}
