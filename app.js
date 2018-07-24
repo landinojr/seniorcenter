@@ -22,7 +22,7 @@ var bookKeywords = [];
 var movieKeywords = ["IT","Touching the void","The hustler"];
 var keywordsToSearch = ["fiction","cooking","survival","physics","art"];
 var metaData = new Map();
-var $ = require('jQuery');
+var $ = require('jquery');
 var commonMovies = new Map();
 var commonBooks = new Map();
 //Session state
