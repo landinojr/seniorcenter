@@ -10,8 +10,6 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 var books = require('google-books-search');
 //Models
-const Movie = require('./models/movie');  
-const Book = require('./models/Book');
 const async = require('async');
 const reload = require ('reload')
 //VOICE CLIENT
@@ -338,7 +336,7 @@ function find_book_friend(searchBook, callback){
 }
 
 var app = express();
-//const helloDFController = require('./controllers/helloDFController');
+const helloDFController = require('./controllers/helloDFController');
 
 const mongoose = require( 'mongoose' );
 const mongoDB = process.env.MONGO_URI || 'mongodb://localhost:27017/seniorcenter';
