@@ -1,23 +1,36 @@
 //Global variables
-var createError = require('http-errors'),
-express = require('express'),
-path = require('path'),
-cookieParser = require('cookie-parser'),
-logger = require('morgan'),
-readline = require('readline-sync'),
-omdb = require('omdb-client'),
-books = require('google-books-search');
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+var readline = require('readline-sync');
+var omdb = require('omdb-client');
+const session = require("express-session");
+const bodyParser = require("body-parser");
+var books = require('google-books-search');
+//Models
+const async = require('async');
+const reload = require ('reload')
+//VOICE CLIENT
+//var SinchClient = require('sinch-rtc');
 
-const session = require("express-session"),
-bodyParser = require("body-parser"),
-async = require('async'),
-reload = require ('reload');
-
-var defaultKeywords = ["fiction","cooking","art","science"];
+//Controllers
+//const mediaController = require('./controllers/mediaController');
+//Suggestion keywords
+var bookKeywords = [];
+var movieKeywords = ["IT","Touching the void","The hustler"];
+var keywordsToSearch = ["fiction","cooking","survival","physics","art"];
 var metaData = new Map();
 var $ = require('jquery');
+var commonMovies = new Map();
+var commonBooks = new Map();
 //Session state
+var auth2;
+var signedIn = false;
 const function_list = [];
+var searchData;
+var id_of_current_user;
 const passport = require('passport');
 //const configPassport = require('./config/passport')
 //configPassport.test(passport);
@@ -66,8 +79,7 @@ function(token, refreshToken, profile, done) {
                       googleemail:profile.emails[0].value,
                       firstname: profile.name.givenName,
                       lastname: profile.name.familyName,
-                      profileimg: profile._json.image.url,
-                      bookKeywords: defaultKeywords
+                      profileimg: profile._json.image.url
                     });
                 id_of_current_user = new ObjectID(newUser._id);
                 // save the user
@@ -76,7 +88,7 @@ function(token, refreshToken, profile, done) {
                     if (err)
                         throw err;
                     return done(null, newUser);
-                }); 
+                });
             }
         });
     });
@@ -97,13 +109,13 @@ passport.deserializeUser(function(id, done) {
 });
 //Database + API functions
 function options_for_key_search(searchField,shift,max){
-  //declare and return functions 
+  //declare and return functions
   var options = {
     //key: "AIzaSyDfYJlzqCDNTa7ScwfTGm3gnxFkRFO4JBA",
     field: searchField,
     limit: max,
     offset: shift,
-    type: 'books', 
+    type: 'books',
     order: 'relevance',
     lang: 'en',
     country: 'US'
@@ -116,7 +128,7 @@ function random_int(max){
 }
 
 function create_omdb_params(title){
-	//declare and return functions 
+	//declare and return functions
 	var params = {
     	apiKey: 'f7cb9dc5',
     	title: title
@@ -290,6 +302,18 @@ function search_users(searchName, callback){
   User.findById(id_of_current_user, function(err, user) {
     if(!err){
       User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
+      return User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback)
+    }
+  });
+}
+
+async function add_friend(selfID, friendID){
+  User.findById(selfID, function(err, user) {
+    if(!err){
+      user.friends.push(friendID);
+      user.save(function (err, updatedUser) {
+          if (!err) console.log(updatedUser.googlename + " added as friend!");
+      });
     }
   });
 }
@@ -335,7 +359,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(session({ secret: 'asysahnaahaham' }));
+app.use(session({ secret: 'zzbbyanana' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -363,12 +387,6 @@ app.get('/auth/google/callback', passport.authenticate('google', {
   successRedirect: '/',
   failureRedirect: '/'
 }))
-
-app.use((req,res, next)=> {
-  if(req.isAuthenticated()){
-    console.log("USER " + req.user);
-  }
-})
 
 app.get('/profile',(req,res)=> {
   if(req.isAuthenticated()){
@@ -501,10 +519,6 @@ app.post('/home',(req,res)=> {
   }
 })
 
-
-app.post('/profile/addNumber',(req,res)=> {
-//FINISH
-})
 
 app.post('/home/:id',(req,res)=> {
   books.lookup(req.params.id, function(err, data) {
