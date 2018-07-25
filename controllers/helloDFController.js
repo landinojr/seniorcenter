@@ -53,7 +53,16 @@ function proccess_request(req,res){
       }
     })
   }else if(req.body.queryResult.intent.displayName === "add-friends" && req.body.queryResult.parameters["sys.given-name"]){
+      output_String = method.search_users(req.body.queryResult.parameters["sys.given-name"], callback)
 
+    return res.json({
+      "fulfillmentMessages": [],
+      "fulfillmentText": output_String,
+      "payload": {"slack":{"text":output_String}},
+      "outputContexts": [],
+      "source": "Test Source",
+      "followupEventInput": {}
+    })
 
   }else if(req.body.queryResult.intent.displayName === "books" && req.body.queryResult.parameters["any"]){
     console.log("we in books ")

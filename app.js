@@ -88,7 +88,7 @@ function(token, refreshToken, profile, done) {
                     if (err)
                         throw err;
                     return done(null, newUser);
-                }); 
+                });
             }
         });
     });
@@ -109,13 +109,13 @@ passport.deserializeUser(function(id, done) {
 });
 //Database + API functions
 function options_for_key_search(searchField,shift,max){
-  //declare and return functions 
+  //declare and return functions
   var options = {
     //key: "AIzaSyDfYJlzqCDNTa7ScwfTGm3gnxFkRFO4JBA",
     field: searchField,
     limit: max,
     offset: shift,
-    type: 'books', 
+    type: 'books',
     order: 'relevance',
     lang: 'en',
     country: 'US'
@@ -128,7 +128,7 @@ function random_int(max){
 }
 
 function create_omdb_params(title){
-	//declare and return functions 
+	//declare and return functions
 	var params = {
     	apiKey: 'f7cb9dc5',
     	title: title
@@ -302,6 +302,7 @@ function search_users(searchName, callback){
   User.findById(id_of_current_user, function(err, user) {
     if(!err){
       User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
+      return User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback)
     }
   });
 }
