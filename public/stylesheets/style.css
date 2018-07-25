@@ -20,3 +20,13 @@ a {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.card-deck {
+  width: 1280px;
+  margin: auto;
+}
+
+#roundedrectbehindtext {
+  background-color: #fff;
+  border-radius: 5px;
+}
