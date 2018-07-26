@@ -143,14 +143,14 @@ function proccess_request(req,res){
     })
 
   }else if(req.body.queryResult.intent.displayName === "Help"){
-    output_String = "The commands to activiate searchers are as followed: \n "+
-    " Series: tv-show search" +
-    "film/movie: movie search" +
-    "read: book search " +
-    " a sample command would be as followed" +
-    " I want to watch the film departed"+
-    "i want to read IT"+
-    "i want to watch the series friends"
+    output_String = "The commands to activiate searchers are as followed. "+
+    " Series: tv-show search ." +
+    " film/movie: movie search. " +
+    "read: book search ." +
+    " a sample command would be as followed. " +
+    " I want to watch the film departed. "+
+    " i want to read IT ."+
+    " i want to watch the series friends. "
 
 
     return res.json({
@@ -163,7 +163,7 @@ function proccess_request(req,res){
     })
 
   } else if(req.body.queryResult.intent.displayName === "search-media"){
-    console.log("search media")
+    console.log("search media"
     if(typeof currMedia != 'undefined'){
       output_String = "what would you like the search"
       if(req.body.queryResult.parameters["search-director"]){
