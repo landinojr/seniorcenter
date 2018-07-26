@@ -4,6 +4,14 @@ block content
     h1(class="blockquote text-center", action = "/home", font color='white')
         br
         font(color = 'white', size = '6') Welcome #{user.googlename}
+    if !user.phoneNumber
+        form.form-inline.my-2.my-lg-0(action='/profile/addNumber/', method='post')
+            input.form-control.mr-sm-2(type='search', placeholder='Enter number', aria-label='Search', name = 'numberInput')
+            button.btn.btn-secondary(type='submit') Add a phone number
+    else
+        form.form-inline.my-2.my-lg-0(action='/profile/addNumber/', method='post')
+            input.form-control.mr-sm-2(type='search', placeholder=user.phoneNumber, aria-label='Search', name = 'numberInput')
+            button.btn.btn-secondary(type='submit') Change phone number
     .row
         .col
         if user.readBooks.length > 0
