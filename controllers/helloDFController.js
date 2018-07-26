@@ -163,7 +163,7 @@ function proccess_request(req,res){
     })
 
   } else if(req.body.queryResult.intent.displayName === "search-media"){
-    console.log("search media"
+    console.log("search media")
     if(typeof currMedia != 'undefined'){
       output_String = "what would you like the search"
       if(req.body.queryResult.parameters["search-director"]){
