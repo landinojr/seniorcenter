@@ -13,7 +13,8 @@ html(lang="en")
       .image-block
         a.navbar-brand(href='/home') SeniorClub
         if isLoggedIn
-          img(src=profileurl, style= 'border-radius: 20%')
+          a(href="/profile")
+            img(src=profileurl, style= 'border-radius: 20%')
       button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='true', aria-label='Toggle navigation')
         span.navbar-toggler-icon
       #navbarSupportedContent.collapse.navbar-collapse
