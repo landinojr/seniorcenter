@@ -571,11 +571,10 @@ app.get('/home',(req,res)=> {
         if(!err){
           if(is_new_media(user)){
             fill_with_media(5,user, function(err, resolvedUser){
-              console.log(resolvedUser.metaData.get("fiction")[0].title);
+              //console.log(resolvedUser.metaData.get("fiction")[0].title);
               res.render('home', {readBookIds: user.bookIds, keywordsOrder: resolvedUser.bookKeywords, books: resolvedUser.metaData, title: 'SeniorClub'});
             });
           }else{
-            console.log(user.metaData.get("fiction")[0].title);
             res.render('home', {readBookIds: user.bookIds, keywordsOrder: user.bookKeywords, books: user.metaData, title: 'SeniorClub'});
           }
         }
