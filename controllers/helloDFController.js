@@ -142,7 +142,7 @@ function proccess_request(req,res){
       }
     })
 
-  }else if(req.body.queryResult.intent.displayName === "help"){
+  }else if(req.body.queryResult.intent.displayName === "Help"){
     output_String = "The commands to activiate searchers are as followed: \n "+
     " Series: tv-show search" +
     "film/movie: movie search" +
