@@ -87,9 +87,10 @@ function proccess_request(req,res){
         console.log("==========-------=====================")
         console.log(data.title)
         console.log("loading book...")
+        currdara = data
 
       //  output_String = data.Title + " " + data.Year + " " + data.Plot
-        output_String = "your search has completed the movie you sarched for is "
+        output_String = "your search has completed.  The book you sarched for is "
         + data.title + " and the author is "+ data.authors
 
         currData = data
@@ -143,7 +144,7 @@ function proccess_request(req,res){
     })
 
   }else if(req.body.queryResult.intent.displayName === "Help"){
-    output_String = "The commands to activate searchers are as followed. "+
+    output_String = "The commands to activate searches are as followed. "+
     " Series: tv-show search." +
     " film/movie: movie search. " +
     "read: book search." +
@@ -176,7 +177,7 @@ function proccess_request(req,res){
       }
   }else{
 
-    output_String = "your must enter what media you would liek to seach"
+    output_String = "your must enter what media you would like to search"
   }
   return res.json({
     "fulfillmentMessages": [],
