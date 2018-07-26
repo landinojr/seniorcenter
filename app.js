@@ -622,7 +622,7 @@ app.post('/home/movie/:movieid',(req,res)=> {
           if (!(data.moveid in user.movieIds)){
             user.watchedMovies.push(new_data);
             user.movieIds.push(data.movieid);
-            user.watchedMovieTitles.push(data.Title);
+            //user.watchedMovieTitles.push(data.Title);
             user.save(function (err, updatedUser) {
             console.log(updatedUser);
           });
