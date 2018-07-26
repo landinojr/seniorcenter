@@ -226,8 +226,6 @@ function proccess_request(req,res){
         output_String = currmedia.Plot
       }
 
-
-
       return res.json({
         "fulfillmentMessages": [],
         "fulfillmentText": output_String,
@@ -241,7 +239,14 @@ function proccess_request(req,res){
 
 
 }else{
-    return output_string = "test error!";
+  return res.json({
+    "fulfillmentMessages": [],
+    "fulfillmentText": output_String,
+    "payload": {"slack":{"text":output_String}},
+    "outputContexts": [],
+    "source": "Test Source",
+    "followupEventInput": {}
+  })
 
   }
 }
