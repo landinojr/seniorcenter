@@ -171,7 +171,7 @@ function is_media(keyword, user){
   if(user.metaData.has(keyword.toLowerCase())){
     return true;
   }
-  return (user.bookKeywords.indexOf(keyword.toLowerCase()) > -1);
+  return user.bookKeywords.includes(keyword);
 }
 
 
@@ -183,7 +183,6 @@ function fill_with_media(numPerRow,user,callback){
     while (is_new_media(user)){
       let keyword = user.keywordsToSearch.pop();
       console.log("K " + keyword);
-      user.bookKeywords.splice(0, 0, keyword);
       user.save();
       function_list.push(function(callback){
       books.search(keyword,options_for_key_search("subject",0,numPerRow), function(err, data) {
@@ -195,6 +194,7 @@ function fill_with_media(numPerRow,user,callback){
           if (data) {
             console.log("Subject search on " + keyword + " got " + data.length + "/" + numPerRow + " results");
             if (data.length > 0){
+              user.bookKeywords.splice(0, 0, keyword);
               user.metaData.set(keyword, data);
             }else{
               remove_keyword(keyword,user);
@@ -218,7 +218,7 @@ function fill_with_media(numPerRow,user,callback){
     })
 }
 
-function switch_keywords(keyX,keyY,user){
+function switch_keywords(keyX,keyY,user,callback){
   console.log(user);
   var x = user.bookKeywords.indexOf(keyX);
   var y = user.bookKeywords.indexOf(keyY);
@@ -226,14 +226,15 @@ function switch_keywords(keyX,keyY,user){
   var temp = user.bookKeywords[y];
   user.bookKeywords[y] = user.bookKeywords[x];
   user.bookKeywords[x] = temp;
-  user.save();
+  return user.save(callback);
 }
 
-function add_keyword(keyword,user){
+function add_keyword(keyword,user,callback){
   user.keywordsToSearch.push(keyword);
+  return user.save(callback);
 }
 
-function remove_keyword(keyword,user){
+function remove_keyword(keyword,user,callback){
   console.log(keyword);
   //test if it is a keyword first then splice
   if (is_media(keyword,user)){
@@ -241,7 +242,7 @@ function remove_keyword(keyword,user){
     //console.log(user.metaData.get(keyword));
   }
   user.bookKeywords.splice(user.bookKeywords.indexOf(keyword), 1);
-  user.save();
+  return user.save(callback);
 }
 
 function movie_to_string(movieOBJ){
@@ -272,6 +273,8 @@ function get_id_params(id, type){
   }
 }
 
+//THEM ASYNC/AWAIT FUNCTIONS
+//NEEDS WORK
 async function find_common_media(selfID){
   User.findById(selfID, function(err, user) {
     if(!err){
@@ -322,6 +325,16 @@ function search_users(searchName, callback){
   return User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
 }
 
+async function add_friend(selfID, friendID){
+  User.findById(selfID, function(err, user) {
+    if(!err){
+      user.friends.push(friendID);
+      user.save(function (err, updatedUser) {
+          if (!err) console.log(updatedUser.googlename + " added as friend!");
+      });
+    }
+  });
+}
 
 function find_movie_friend(searchMovie, callback){
   //User.schema.index({watchedMovieTitles : 'text'});
@@ -488,28 +501,35 @@ app.post('/home',(req,res)=> {
   if (req.user){
     User.findOne({googleid: req.user.googleid}, function(err, user) {
         if(!err){
+          var userForMedia = user;
+          dataToUse = user.metaData;
+          keywordsToUse = user.bookKeywords;
           bookIds = user.bookIds;
           if (req.body.searchTopic){
-            if (!is_media(req.body.searchTopic, user)) add_keyword(req.body.searchTopic,user);
+            if (!is_media(req.body.searchTopic, user)) add_keyword(req.body.searchTopic,user, function(err, updatedUser){
+              userForMedia = updatedUser;
+              console.log(userForMedia.keywordsToSearch);
+            });
           }else if(req.body.topicSwitch){
             var topics = JSON.parse(req.body.topicSwitch);
-            switch_keywords(topics[0], topics[1], user);
-          }else if (req.body.topicDelete){
-            remove_keyword(req.body.topicDelete, user);
-          } 
-          if(is_new_media(user)){
-            fill_with_media(5,user, function(err, resolvedUser){
-              res.render('home', {readBookIds: user.bookIds, keywordsOrder: resolvedUser.bookKeywords, books: resolvedUser.metaData, title: 'SeniorClub'});
+            switch_keywords(topics[0], topics[1], user, function(err, updatedUser){
+              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'}); 
             });
-          }else{
-            dataToUse = user.metaData;
-            keywordsToUse = user.bookKeywords;
+          }else if (req.body.topicDelete){
+            remove_keyword(req.body.topicDelete, user, function(err, updatedUser){
+              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'}); 
+            });
+          } 
+          console.log(userForMedia.keywordsToSearch);
+          if(is_new_media(userForMedia)){
+            fill_with_media(5,userForMedia, function(err, resolvedUser){
+              if (!err){
+                res.render('home', {readBookIds: user.bookIds, keywordsOrder: resolvedUser.bookKeywords, books: resolvedUser.metaData, title: 'SeniorClub'});
+              }
+            });
           }
         }
       });
-  }else{
-    dataToUse = sampleData;
-    keywordsToUse = sampleKeywords;
   }
   //SEARCH RELATED STUFF
   if (req.body.mediaType && req.body.mediaType === "Book"){
@@ -531,7 +551,11 @@ app.post('/home',(req,res)=> {
       }
     })
   }else{
-    res.render('home', {readBookIds: bookIds, keywordsOrder: keywordsToUse, books: dataToUse, title: 'SeniorClub'});
+    if(req.user){
+      console.log("SHOULD NOT BE HERE");
+    }else{
+      res.render('home', { keywordsOrder: sampleKeywords, books: sampleData, title: 'SeniorClub'});
+    }
   }
 })
 
@@ -575,6 +599,7 @@ app.get('/home',(req,res)=> {
               res.render('home', {readBookIds: user.bookIds, keywordsOrder: resolvedUser.bookKeywords, books: resolvedUser.metaData, title: 'SeniorClub'});
             });
           }else{
+            //console.log(user.metaData.get("fiction")[0].title);
             res.render('home', {readBookIds: user.bookIds, keywordsOrder: user.bookKeywords, books: user.metaData, title: 'SeniorClub'});
           }
         }
