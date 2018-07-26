@@ -143,13 +143,13 @@ function proccess_request(req,res){
     })
 
   }else if(req.body.queryResult.intent.displayName === "Help"){
-    output_String = "The commands to activiate searchers are as followed. "+
-    " Series: tv-show search ." +
+    output_String = "The commands to activate searchers are as followed. "+
+    " Series: tv-show search." +
     " film/movie: movie search. " +
-    "read: book search ." +
+    "read: book search." +
     " a sample command would be as followed. " +
     " I want to watch the film departed. "+
-    " i want to read IT ."+
+    " i want to read IT. "+
     " i want to watch the series friends. "
 
 
