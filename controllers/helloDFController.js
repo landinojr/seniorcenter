@@ -1,5 +1,6 @@
 var methods = require('../helpers/methods.js');
 var omdb = require('omdb-client');
+var currData;
 
 exports.respondToDF =  (req, res) => {
   console.log("we are processing...")
@@ -36,7 +37,7 @@ function proccess_request(req,res){
         console.log("loading book...")
 
       //  output_String = data.Title + " " + data.Year + " " + data.Plot
-        output_String = "your search has completed the movie you sarched for is"
+        output_String = "your search has completed the movie you sarched for is "
         + data.Title + " it was released " + data.Year + " and the director is "+
         data.Director
 
@@ -87,7 +88,6 @@ function proccess_request(req,res){
         console.log("==========-------=====================")
         console.log(data.title)
         console.log("loading book...")
-        currdara = data
 
       //  output_String = data.Title + " " + data.Year + " " + data.Plot
         output_String = "your search has completed.  The book you sarched for is "
