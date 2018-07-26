@@ -9,10 +9,9 @@ exports.respondToDF =  (req, res) => {
 function proccess_request(req,res){
   console.log("in process_request")
   var async = require('async');
-  var output_String
+  var output_String = "Well, if you are hearing this something went wrong, so it might be a good start to tell you the invocation phrasses. if this is your first time using the app please say 'help'"
 
   console.log(req.body.queryResult.parameters["any"])
-  console.log("83u83jf93rpufrpu")
   console.log(req.body.queryResult.intent.displayName === "books")
 
   if(req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
@@ -143,7 +142,27 @@ function proccess_request(req,res){
       }
     })
 
-  }else if(req.body.queryResult.intent.displayName === "search-media"){
+  }else if(req.body.queryResult.intent.displayName === "help"){
+    output_String = "The commands to activiate searchers are as followed: \n "+
+    " Series: tv-show search" +
+    "film/movie: movie search" +
+    "read: book search " + "
+    a sample command would be as followed" +
+    " I want to watch the film departed"+
+    "i want to read IT"+
+    "i want to watch the series friends"
+
+
+    return res.json({
+      "fulfillmentMessages": [],
+      "fulfillmentText": output_String,
+      "payload": {"slack":{"text":output_String}},
+      "outputContexts": [],
+      "source": "Test Source",
+      "followupEventInput": {}
+    })
+
+  } else if(req.body.queryResult.intent.displayName === "search-media"){
     console.log("search media")
     if(typeof currMedia != 'undefined'){
       output_String = "what would you like the search"
