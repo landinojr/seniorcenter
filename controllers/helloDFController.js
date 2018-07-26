@@ -1,6 +1,6 @@
 var methods = require('../helpers/methods.js');
 var omdb = require('omdb-client');
-var currData;
+var currmedia;
 
 exports.respondToDF =  (req, res) => {
   console.log("we are processing...")
@@ -41,7 +41,7 @@ function proccess_request(req,res){
         + data.Title + " it was released " + data.Year + " and the director is "+
         data.Director
 
-        currData = data
+        currmedia = data
         return res.json({
           "fulfillmentMessages": [],
           "fulfillmentText": output_String,
@@ -93,7 +93,7 @@ function proccess_request(req,res){
         output_String = "your search has completed.  The book you sarched for is "
         + data.title + " and the author is "+ data.authors
 
-        currData = data
+        currmedia = data
         return res.json({
           "fulfillmentMessages": [],
           "fulfillmentText": output_String,
@@ -131,7 +131,7 @@ function proccess_request(req,res){
         + data.Title + " it was released " + data.Year + " and the director is "+
         data.Director
 
-        currData = data
+        currmedia = data
         return res.json({
           "fulfillmentMessages": [],
           "fulfillmentText": output_String,
@@ -165,7 +165,7 @@ function proccess_request(req,res){
 
   } else if(req.body.queryResult.intent.displayName === "search-media"){
     console.log("search media")
-    if(typeof currMedia != 'undefined'){
+    if(typeof currmedia != 'undefined'){
       output_String = "what would you like the search"
       if(req.body.queryResult.parameters["search-director"]){
         console.log("we searching fam")
@@ -186,56 +186,6 @@ function proccess_request(req,res){
     "outputContexts": [],
     "source": "Test Source",
     "followupEventInput": {}
-  })
-
-
-}else if(req.body.queryResult.intent.displayName === "search-media" && req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
-
-  console.log("we in  movie search ")
-  var movieName = req.body.queryResult.parameters["any"]
-  console.log("movie name below")
-  console.log(movieName)
-  var a = methods.create_omdb_params(movieName)
-
-  async.series([
-    function(callback){
-      methods.getMovieData(movieName, callback);
-    },
-  ], function(err, results){
-    if(err){
-      res.status(400);
-      res.json(err);
-    } else {
-      //send result
-      const data = results[0];
-      console.log(data.Title)
-      console.log("loading book...")
-
-    //  output_String = data.Title + " " + data.Year + " " + data.Plot
-      output_String = "your search has completed the movie you sarched for is"
-      + data.Title + " it was released " + data.Year + " and the director is "+
-      data.Director
-
-      currData = data
-
-      if(req.body.queryResult.parameters["search-director"]){
-        console.log("we searching fam")
-        output_String = " The director of " + currMedia + " is " + currMedia.Direcor
-      }else if(req.body.queryResult.parameters["search-year"]){
-        output_String = " The year " + currMedia + " was released is " + currMedia.Year
-      }else {
-        output_String = currmedia.Plot
-      }
-
-      return res.json({
-        "fulfillmentMessages": [],
-        "fulfillmentText": output_String,
-        "payload": {"slack":{"text":output_String}},
-        "outputContexts": [],
-        "source": "Test Source",
-        "followupEventInput": {}
-      })
-    }
   })
 
 
