@@ -146,8 +146,8 @@ function proccess_request(req,res){
     output_String = "The commands to activiate searchers are as followed: \n "+
     " Series: tv-show search" +
     "film/movie: movie search" +
-    "read: book search " + "
-    a sample command would be as followed" +
+    "read: book search " +
+    " a sample command would be as followed" +
     " I want to watch the film departed"+
     "i want to read IT"+
     "i want to watch the series friends"
