@@ -15,7 +15,9 @@ var userSchema = mongoose.Schema( {
     of: Object
   },
   readBooks: [{ name : String, url: String, poster: String, id: String}],
-  readBookTitles: {'type':  [String], 'text' : true},
+  watchedMovieTitles: [String],
+  readBookTitles: [String],
+  currentIndex: String,
   bookIds: [String],
   watchedMovies: [{ name : String, url: String, poster: String, id: String}],
   movieIds: [String],
@@ -25,5 +27,9 @@ var userSchema = mongoose.Schema( {
   friendReqs: [String],
   phoneNumber: String
 } );
+
+userSchema.methods.isIndex = function isIndex (index) {
+  console.log(userSchema.getIndexes());
+};
 
 module.exports = mongoose.model( 'User', userSchema );

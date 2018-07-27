@@ -336,13 +336,20 @@ async function add_friend(selfID, friendID){
   });
 }
 
-function find_movie_friend(searchMovie, callback){
-  //User.schema.index({watchedMovieTitles : 'text'});
+//SEPERATE BUT EQUAL SEARCH F(N)'s
+function find_movie_friend(currentIndex, searchMovie, callback){
+  if (currentIndex != "movieIndex"){
+    userCollection.dropIndex("bookIndex");
+    userCollection.createIndex({watchedMovieTitles: 'text'}, {name: 'movieIndex'});
+  }
   User.find({$text: {$search: searchMovie}}, callback).limit(10);
 }
 
-function find_book_friend(searchBook, callback){
-  //User.schema.index({readBookTitles : 'text'});
+function find_book_friend(currentIndex, searchBook, callback){
+  if (currentIndex != "bookIndex"){
+    userCollection.dropIndex("movieIndex");
+    userCollection.createIndex({readBookTitles: 'text'}, {name: 'bookIndex'});
+  }
   User.find({$text: {$search: searchBook}}, callback).limit(10);
 }
 
@@ -354,6 +361,7 @@ const mongoDB = process.env.MONGO_URI || 'mongodb://localhost:27017/seniorcenter
 // here is where we connect to the database!
 mongoose.connect( mongoDB );
 const db = mongoose.connection;
+const userCollection = db.collection('users');
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   console.log("we are connected!");
@@ -382,6 +390,8 @@ app.use(function(req, res, next){
         if(!err){
          res.locals.isLoggedIn = true;
          res.locals.profileurl = user.profileimg;
+         //res.locals.testUser = user;
+         //console.dir(res.locals);
         }
         next();
       });
@@ -464,22 +474,22 @@ app.post('/friends/finditem',(req,res)=> {
       User.findOne({googleid: req.user.googleid}, function(err, user) {
         if(!err){
          if (req.body.searchType == "movie"){
-          find_movie_friend(req.body.searchInput, function(err, results){
+          find_movie_friend(user.currentIndex, req.body.searchInput, function(err, results){
             if(err){
               console.log(err);
               res.render('friends', {user: user});
             } else {
-              console.log("RESULTS " + results);
+              //console.log("RESULTS " + results);
               res.render('friends', {user: user, friendsByItem: results});
             }
           });
          }else{
-            find_book_friend(req.body.searchInput, function(err, results){
+            find_book_friend(user.currentIndex, req.body.searchInput, function(err, results){
               if(err){
                 console.log(err);
                 res.render('friends', {user: user});
               } else {
-                console.log("RESULTS " + results);
+                //console.log("RESULTS " + results);
                 res.render('friends', {user: user, friendsByItem: results});
               }
             });
@@ -621,8 +631,8 @@ app.post('/home/movie/:movieid',(req,res)=> {
           //console.log(new_data);
           if (!(data.moveid in user.movieIds)){
             user.watchedMovies.push(new_data);
-            user.movieIds.push(data.movieid);
-            //user.watchedMovieTitles.push(data.Title);
+            user.movieIds.push(req.params.movieid);
+            user.watchedMovieTitles.push(data.Title);
             user.save(function (err, updatedUser) {
             console.log(updatedUser);
           });
