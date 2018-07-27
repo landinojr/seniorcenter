@@ -36,30 +36,34 @@ block content
                               i.fa.fa-star(style='font-size:24px; color: gold')
                         - j--;
                   if isLoggedIn
-                    i.fa.fa-bookmark(style='font-size:24px;')
+                    - if (readBookIds.includes(book.id))
+                      i.fa.fa-bookmark(style='font-size:24px;')
     else if searchInput
       font(color = 'white', size = '6', position = 'relative') No results for #{searchInput} in #{searchType}
       br
     each keyword in keywordsOrder
       - let topic = books.get(keyword)
-        font(color = 'white', size = '8', position = 'relative')
-          .btn-group
-            button.btn.btn-subject.btn-lg.dropdown-toggle(type='button', style='font-size: 30px; margin: 10px; margin-left: 16px;', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-              b #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
-            .dropdown-menu
-              - for (let [key, topic] of books)
-                - if (key !== keyword)
-                  form(action='/home', method='post')
-                    - var topics = [key,keyword];
-                    button(name = 'topicDelete', value=key, type='submit', style='float: right; background:transparent; border:none; outline:none;')
+        if isLoggedIn
+          font(color = 'white', size = '8', position = 'relative')
+            .btn-group
+              button.btn.btn-subject.btn-lg.dropdown-toggle(type='button', style='font-size: 30px; margin: 10px; margin-left: 16px;', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
+                b #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
+              .dropdown-menu
+                - for (let [key, topic] of books)
+                  - if (key !== keyword)
+                    form(action='/home', method='post')
+                      - var topics = [key,keyword];
+                      button(name = 'topicDelete', value=key, type='submit', style='float: right; background:transparent; border:none; outline:none;')
                       i.fa.fa-trash-o
-                    button(name = 'topicSwitch', value=topics, type='submit', style='overflow: hidden; background:transparent; border:none; outline:none;')
-                      a.dropdown-item #{key}
-              form(action='/home', method='post')
-                button.btn.btn-default(type='submit', style='float: right')
-                  i.fa.fa-search
-                div(style='overflow: hidden; padding-right: .5em; padding-left: .5em;')
-                  input.form-control.mr-sm-2(type='text', name='searchTopic', style='width: 100%;', placeholder='Add Topic')
+                      button(name = 'topicSwitch', value=topics, type='submit', style='overflow: hidden; background:transparent; border:none; outline:none;')
+                        a.dropdown-item #{key}
+                form(action='/home', method='post')
+                  button.btn.btn-default(type='submit', style='float: right')
+                    i.fa.fa-search
+                  div(style='overflow: hidden; padding-right: .5em; padding-left: .5em;')
+                    input.form-control.mr-sm-2(type='text', name='searchTopic', style='width: 100%;', placeholder='Add Topic')
+        else
+          font(color = 'white', size = '8', position = 'relative') #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
         //font(color = 'white', size = '6', position = 'relative')
         .card-deck.row.flex-row.flex-nowrap
           each book in topic
@@ -78,4 +82,5 @@ block content
                             i.fa.fa-star(style='font-size:24px; color: gold')
                         - j--;
                   if isLoggedIn
-                    i.fa.fa-bookmark(style='font-size:24px; color:white')
+                    - if (readBookIds.includes(book.id))
+                      i.fa.fa-bookmark(style='font-size:24px; color:white')
