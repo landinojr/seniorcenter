@@ -14,10 +14,6 @@ exports.getMovie = function (data){
 	});
 }
 
-
-
-
-
   //imdb.search({
   //  title: String(data)
   //}, {
@@ -106,7 +102,6 @@ exports.getMovieData = function(title, callback) {
 	});
 }
 
-
 exports.options_for_key_search = function(shift){
   //declare and return functions
   var options = {
@@ -123,9 +118,6 @@ exports.options_for_key_search = function(shift){
 exports.random_int = function(max){
   return Math.floor(Math.random()*max);
 }
-
-
-
 
 exports.search_users = function(searchName, callback){
   var nameArr = searchName.split(" ");

@@ -22,8 +22,30 @@ a {
 }
 
 .card-deck {
-  width: 1280px;
+  /*white-space: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;*/
+}
+
+.card-deck card {
+  display: inline-block;
+  width: 100%;
+  height: auto;
   margin: auto;
+}
+
+.btn-auth {
+  background-color: #4473c1;
+  color: #333;
+}
+
+.btn-subject {
+  background-color: #4473c1;
+  margin: 5px;
+}
+
+#makinthispretty {
+  width: 100%;
 }
 
 #roundedrectbehindtext {
