@@ -16,10 +16,14 @@ function proccess_request(req,res){
   console.log(req.body.queryResult.intent.displayName === "books")
 
   if(req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
+
     console.log("we in  movie search ")
+
     var movieName = req.body.queryResult.parameters["any"]
+
     console.log("movie name below")
     console.log(movieName)
+
     var a = methods.create_omdb_params(movieName)
 
     async.series([
@@ -65,11 +69,15 @@ function proccess_request(req,res){
     })
 
   }else if(req.body.queryResult.intent.displayName === "books" && req.body.queryResult.parameters["any"]){
+
     console.log("we in books ")
+
     var book = req.body.queryResult.parameters["any"]
+
     console.log("movie name below")
     console.log(movieName)
     console.log(book)
+
     async.series([
       function(callback){
 
@@ -83,13 +91,6 @@ function proccess_request(req,res){
         //send result
         const data = results[0];
 
-
-      //  console.log(daa.title)
-        console.log("==========-------=====================")
-        console.log(data.title)
-        console.log("loading book...")
-
-      //  output_String = data.Title + " " + data.Year + " " + data.Plot
         output_String = "your search has completed.  The book you sarched for is "
         + data.title + " and the author is "+ data.authors
 
@@ -105,11 +106,15 @@ function proccess_request(req,res){
       }
     })
 
-  } else if(req.body.queryResult.intent.displayName === "tv-show" && req.body.queryResult.parameters["any"]){
+  }else if(req.body.queryResult.intent.displayName === "tv-show" && req.body.queryResult.parameters["any"]){
+
     console.log("we in  movie search ")
+
     var movieName = req.body.queryResult.parameters["any"]
+
     console.log("movie name below")
     console.log(movieName)
+
     var a = methods.create_omdb_params(movieName)
 
     async.series([
@@ -123,8 +128,6 @@ function proccess_request(req,res){
       } else {
         //send result
         const data = results[0];
-        console.log(data.Title)
-        console.log("loading book...")
 
       //  output_String = data.Title + " " + data.Year + " " + data.Plot
         output_String = "your search has completed the movie you sarched for is"
@@ -209,10 +212,6 @@ function getMovieData(title) {
 		data = data ||
 		   {title: title,
        year: year}
-       console.log("=======================")
-       console.log(data)
-       console.log("=======================")
-
 	});
   return data
 }
