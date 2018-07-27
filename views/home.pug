@@ -54,7 +54,7 @@ block content
                     form(action='/home', method='post')
                       - var topics = [key,keyword];
                       button(name = 'topicDelete', value=key, type='submit', style='float: right; background:transparent; border:none; outline:none;')
-                      i.fa.fa-trash-o
+                        i.fa.fa-trash-o
                       button(name = 'topicSwitch', value=topics, type='submit', style='overflow: hidden; background:transparent; border:none; outline:none;')
                         a.dropdown-item #{key}
                 form(action='/home', method='post')
