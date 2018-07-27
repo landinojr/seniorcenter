@@ -1,0 +1,118 @@
+extends layout
+
+block content
+  h1(class="blockquote text-center", action = "/home", font color='white')
+      br
+      font(color = 'white', size = '6') Welcome #{user.googlename}
+    form.form-inline.my-2.my-lg-0(action='/friends/users/find', method='post')
+      button.btn.btn-primary(type='submit') What do I have in common?
+    form.form-inline.my-2.my-lg-0(action='/friends/find', method='post')
+      input.form-control.mr-sm-2(type='search', placeholder='Search first or last name', aria-label='Search', name = 'searchInput')
+      button.btn.btn-success(type='submit') Find friends
+    if friendsList
+      .col-8
+        ul
+        each f in friendsList
+          //form.form-inline.my-2.my-lg-0(action='/friends/add/'+friendRes._id, method='post')
+          button.btn.btn-secondary(onclick='sendRequest(user,f)') Add #{f.googlename}
+    form.form-inline.my-2.my-lg-0( action = '/friends/finditem', method = 'post')
+      .form-row
+        input.form-control.mr-sm-2(type='search', placeholder='Find someone who likes', aria-label='Search', name = 'searchInput')
+        select.form-control(name = 'searchType')
+          option(value = 'movie') Movie by title
+          option(value = 'book') Book by title
+          option(value = 'subject') Book by subject
+        button.btn.btn-success(type='submit') Search
+    if friendsByItem
+      .col-8
+        ul
+        each friendRes in friendsByItem
+          form.form-inline.my-2.my-lg-0(action='/friends/add/'+friendRes._id, method='post')
+            button.btn.btn-secondary(type='submit') Add #{friendRes.googlename}
+    if(!friendsList && !friendsByItem)
+      .row
+        .col-8
+          each f in user.friends
+            .row
+              .col-2
+                img(src = f.googlepictureurl)
+              .col-10
+                .row
+                  h2 f.googlename
+                .row
+                  //will show if user is online
+            .row
+              .col-4
+                i.fas.fa-envelope
+              .col-4
+                i.fas.fa-phone
+              .col-4
+                i.fas.fa-times
+      .col-4
+        each fr in user.friends
+          if(!fr.isAccepted)
+            .row
+              .col-8
+                h3 You have a friend request from fr.fullName
+              .col-2
+                button.btn.btn-success(onclick='acceptRequest(this, fr)') Accept
+              .col-2
+                button.btn.btn-danger(onclick='rejectRequest(this, fr)') Reject
+              if(user.friends[indexof(fr)+1])
+              // ^ checks whether there is another friend in user.friends
+                if(!user.friends[indexof(fr)+1].isAccepted)
+                // ^ checks whether this friend has been accepted
+                // these are separate to avoid 'cannot read isAccepted of undefined'
+                  hr
+    script
+      sendRequest = function(user,friend) {
+        let newFriend = new Friend({googleid:user.googleid,googlename:user.googlename,firstName:user.firstName,lastName:user.lastName,googlepictureurl:user.googlepictureurl,phoneNumber:user.phoneNumber,isAccepted:false});
+        friend.friends.push(newFriend);
+      };
+
+      acceptRequest = function(user,friend) {
+        //let user = req.user;
+        User.findOneAndUpdate({googleid:user.googleid})
+          .exec()
+          .then((user)) => {
+            Friend.findOneAndUpdate({googleid:friend.googleid})
+              .exec()
+              .then((friend)) => {
+                friend.isAccepted = true;
+              }
+              .catch( ( error ) => {
+                console.log( error.message );
+                return [];
+              } )
+              .then( () => {
+                console.log('friend request accepted');
+              } );
+            user.friends.save(done);
+          }
+          .catch( ( error ) => {
+            console.log( error.message );
+            return [];
+          } )
+          .then( () => {
+            console.log('friend request accepted');
+          } );
+      };
+
+      rejectRequest = function(user, friend) {
+        User.friends.findOne(userID:friend.userID)
+          .exec()
+          .then((friend) => {
+            User.deleteOne(friend.userID:friend.id)
+              exec()
+              .then(()=>{res.redirect('/friends')})
+              .catch((error)=>{res.send(error)})
+            next()
+          } )
+          .catch( ( error ) => {
+            console.log(error.message);
+            return [];
+          } )
+          .then( () => {
+            console.log('friend request rejected');
+          } );
+      };
