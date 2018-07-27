@@ -44,6 +44,26 @@ a {
   margin: 5px;
 }
 
+@media only screen and (min-width: 768px; max-width: 991px;) {
+  .btn-subject {
+    font-size: 5.5vmin;
+    margin: 10px;
+    margin-left: 16px;
+    min-width: 200px;
+    width: 20vw;
+    padding-top: 3%;
+  }
+
+  #subjecttext {
+    text-align: center;
+    margin-top: -6vh;
+  }
+}
+
+.searchbuttons {
+  margin: 0 2px;
+}
+
 #makinthispretty {
   width: 100%;
 }

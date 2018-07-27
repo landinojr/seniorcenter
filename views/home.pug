@@ -44,8 +44,8 @@ block content
       - let topic = books.get(keyword)
         font(color = 'white', size = '8', position = 'relative')
           .btn-group
-            button.btn.btn-subject.btn-lg.dropdown-toggle(type='button', style='font-size: 30px; margin: 10px; margin-left: 16px;', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-              b #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
+            button.btn.btn-subject.dropdown-toggle(type='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false', style='font-size: 5.5vmin; margin: 10px; margin-left: 16px; min-width: 130px; width: 14vw; padding-top: 3%;')
+              b(style='text-align: center; margin-top: -6vh;') #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
             .dropdown-menu
               - for (let [key, topic] of books)
                 - if (key !== keyword)
