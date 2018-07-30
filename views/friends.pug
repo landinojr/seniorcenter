@@ -2,8 +2,13 @@ extends layout
 
 block content
     h1(class="blockquote text-center", action = "/home", font color='white')
-        br
-        font(color = 'white', size = '6') Welcome #{user.googlename}
+    br
+    .container
+        .row
+            .col
+                img.img-responsive(src='https://lh3.googleusercontent.com/-cV1FNQAdYQriSo2C2A2rxyNx95qpo45rLMxm2tu0t_SMKGBaQyXeiaIeD_ZFGNl7j4CpuScOrlwjfAlYi0egOAqwweISb324sGaIMvXp2wlV9dVKg3ErEiGL271o9XAjCyXV0B3xQ=w2400', style='max-width: 700px;')
+                .carousel-caption
+                        font(color = 'white', size = '12') Welcome #{user.googlename}
     form.form-inline.my-2.my-lg-0(action='/friends/users/find', method='post')
         button.btn.btn-primary(type='submit') What do I have in common?
     form.form-inline.my-2.my-lg-0(action='/friends/find', method='post')
@@ -12,8 +17,9 @@ block content
     if friendsList
         ul
         each friendRes in friendsList
-            form.form-inline.my-2.my-lg-0(action='/friends/add/'+friendRes._id, method='post')
-                button.btn.btn-secondary(type='submit') Add #{friendRes.googlename}
+            -var friendValue = JSON.stringify(friendRes);
+            form.form-inline.my-2.my-lg-0(action='/friends/addFriend', method='post')
+                button.btn.btn-secondary(type='submit',name='userAdded',value=friendValue) Add #{friendRes.googlename}
     form.form-inline.my-2.my-lg-0( action = '/friends/finditem', method = 'post')
         .form-row
             input.form-control.mr-sm-2(type='search', placeholder='Find someone who likes', aria-label='Search', name = 'searchInput')
@@ -25,5 +31,33 @@ block content
     if friendsByItem
         ul
         each friendRes in friendsByItem
-            form.form-inline.my-2.my-lg-0(action='/friends/add/'+friendRes._id, method='post')
-                    button.btn.btn-secondary(type='submit') Add #{friendRes.googlename}
+            -var friendValue = JSON.stringify(friendRes);
+            form.form-inline.my-2.my-lg-0(action='/friends/addFriend', method='post')
+                    button.btn.btn-secondary(type='submit',name='userAdded',value=friendValue) Add #{friendRes.googlename}
+                    //if(!friendsList && !friendsByItem)
+    - values = Array.from(user.friends.values());
+        each val in values
+            .card(style='width: 16rem;')
+                    .card-body
+                        .image-block
+                            b.navbar-brand #{val.name}
+                            img(src=val.profileurl, style= 'border-radius: 20%')            
+                        .row
+                            .col-4
+                                i.fa.fa-envelope
+                            .col-4
+                                i.fa.fa-phone
+                        if val.phone
+                            #{val.phone}
+    - values = Array.from(user.friendReqs.values());
+        each val in values
+                .card(style='width: 18rem;')
+                    .card-body
+                        form.form-inline.my-2.my-lg-0(action='/friends/acceptReject', method='post')
+                            .row
+                                h3 You have a friend request from #{val.name}
+                                .row
+                                    .col-5
+                                        button.btn.btn-success(type='submit', name='FRstatus', value=['accept',val.id])  Accept
+                                    .col-5
+                                        button.btn.btn-danger(type='submit', name='FRstatus', value=['reject',val.id])  Reject

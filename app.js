@@ -91,7 +91,9 @@ function(token, refreshToken, profile, done) {
                       lastname: profile.name.familyName,
                       profileimg: profile._json.image.url,
                       keywordsToSearch: sampleKeywords,
-                      metaData: {}
+                      metaData: {},
+                      friends: {},
+                      friendReqs: {}
                     });
                 // save the user
                 newUser.save(function(err) {
@@ -273,39 +275,33 @@ function get_id_params(id, type){
   }
 }
 
-//THEM ASYNC/AWAIT FUNCTIONS
 //NEEDS WORK
-async function find_common_media(selfID){
-  User.findById(selfID, function(err, user) {
-    if(!err){
-     user.friendIds.forEach(function(friendID){
-      User.findById(friendID, function(err, otherUser) {
-        if(!err){
-          user.movieIds.forEach(function(currID){
-            if (otherUser.movieIds.includes(currID)){
-              if (commonMovies.has(currID)){
-                commonMovies.get(currID).push(otherUser);
-              }else{
-                commonMovies.set(currID, [otherUser]);
-              }
-            }
-          });
-          user.bookIds.forEach(function(currID){
-            if (otherUser.bookIds.includes(currID)){
-              if (commonBooks.has(currID)){
-                commonBooks.get(currID).push(otherUser);
-              }else{
-                commonBooks.set(currID, [otherUser]);
-              }
-            }
-          });
+function find_common_media(user, callback){
+  var commonMedia = [];
+  for(let friend in user.friends.values()){
+      User.findOne({googleid: friend.id}, function(err, results){
+        var mediaObject = {
+          movies: common_movies(user.watchedMovies, results.watchedMovies),
+          books: common_books(user.readBooks, results.readBooks),
+          usersMedia: [friend.name,friend.id]
+        }
+        if (mediaObject.movies.length > 0 || mediaObject.books.length > 0){
+          commonMedia.push(mediaObject);
         }
       });
-     });
     }
-  });
+  return commonMedia;
 }
 
+function common_movies(movieList1, movieList2){
+
+}
+
+function common_books(bookList1, bookList2){
+  
+}
+
+//OLD repalce selfID
 function find_friends(selfID){
   //REPLACE
   User.findById(id_of_current_user, function(err, user) {
@@ -325,17 +321,6 @@ function search_users(searchName, callback){
   return User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
 }
 
-async function add_friend(selfID, friendID){
-  User.findById(selfID, function(err, user) {
-    if(!err){
-      user.friends.push(friendID);
-      user.save(function (err, updatedUser) {
-          if (!err) console.log(updatedUser.googlename + " added as friend!");
-      });
-    }
-  });
-}
-
 //SEPERATE BUT EQUAL SEARCH F(N)'s
 function find_movie_friend(currentIndex, searchMovie, callback){
   if (currentIndex != "movieIndex"){
@@ -351,6 +336,19 @@ function find_book_friend(currentIndex, searchBook, callback){
     userCollection.createIndex({readBookTitles: 'text'}, {name: 'bookIndex'});
   }
   User.find({$text: {$search: searchBook}}, callback).limit(10);
+}
+
+function notification(type){
+
+}
+
+function create_friend_from_user(user){
+  return {
+    name: user.googlename,
+    profileurl: user.profileimg,
+    id: user.googleid,
+    phone: user.phoneNumber
+  };
 }
 
 var app = express();
@@ -423,8 +421,88 @@ app.post('/profile/addNumber',(req,res)=> {
       User.findOne({googleid: req.user.googleid}, function(err, user) {
         if(!err){
           user.phoneNumber = req.body.numberInput;
-          user.save();
-          res.render('profile', {user: user});
+          user.save(function(err, results){
+            if (!err) res.render('profile', {user: user});
+          });
+        }
+      });
+  }
+})
+
+app.post('/profile/addEmail',(req,res)=> {
+  if(req.isAuthenticated()){
+      User.findOne({googleid: req.user.googleid}, function(err, user) {
+        if(!err){
+          user.emailAddress = req.body.emailInput;
+          user.save(function(err, results){
+            if (!err) res.render('profile', {user: user});
+          });
+        }
+      });
+  }
+})
+
+app.post('/friends/addFriend',(req,res)=> {
+  var userAdded = JSON.parse(req.body.userAdded);
+  if(req.isAuthenticated()){
+      User.findOne({googleid: req.user.googleid}, function(err, user) {
+        if(!err){
+          var friendReq = {name:user.googlename, id:user.googleid};
+          User.findOne({googleid: userAdded.googleid}, function(err, userOther){
+             userOther.friendReqs.set(user.googleid,friendReq);
+             userOther.save();
+          });
+          user.save(function(err, results){
+            res.render('friends', {user: results});
+          });
+        }
+      });
+  }
+})
+
+app.post('/friends/removeFriend',(req,res)=> {
+  if(req.isAuthenticated()){
+      User.findOne({googleid: req.user.googleid}, function(err, user) {
+        if(!err){
+              User.findOne({googleid: req.body.friendRemove}, function(err, userOther){
+                user.friends.delete(req.body.friendRemove);
+                userOther.friends.delete(user.googleid);
+                userOther.save();
+                user.save(function(err, results){
+                  console.log(results.friends);
+                  res.render('profile', {user: results});
+                });
+              })
+        }
+      });
+  }
+})
+
+app.post('/friends/acceptReject',(req,res)=> {
+  var reqStatus = JSON.parse(req.body.FRstatus);
+  if(req.isAuthenticated()){
+      User.findOne({googleid: req.user.googleid}, function(err, user) {
+        if(!err){
+          console.log(reqStatus[0]);
+          if (reqStatus[0] === "accept"){
+              User.findOne({googleid: reqStatus[1]}, function(err, userOther){
+                console.log("IN STATUS");
+                user.friends.set(userOther.googleid, create_friend_from_user(userOther));
+                userOther.friends.set(user.googleid, create_friend_from_user(user));
+                userOther.save();
+                user.friendReqs.delete(reqStatus[1]);
+                user.save(function(err, results){
+                  console.log(results.friends);
+                  res.render('friends', {user: results});
+                });
+              })
+          }else{
+            user.friendReqs.delete(reqStatus[1]);
+            user.save(function(err, results){
+              console.log(results.friends);
+              res.render('friends', {user: results});
+          });
+          }
         }
       });
   }
@@ -442,7 +520,7 @@ app.get('/friends',(req,res)=> {
 
 app.post('/friends/find',(req,res)=> {
   if(req.isAuthenticated()){
-      User.findOne({googleid: req.user.googleid}, async function(err, user) {
+      User.findOne({googleid: req.user.googleid}, function(err, user) {
         if(!err){
           search_users(req.body.searchInput, function(err, results){
             if(err){

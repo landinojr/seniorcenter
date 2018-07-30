@@ -2,8 +2,13 @@ extends layout
 
 block content
     h1(class="blockquote text-center", action = "/home", font color='white')
-        br
-        font(color = 'white', size = '6') Welcome #{user.googlename}
+    .container
+        .row
+            .col
+                img.img-responsive(src='https://lh3.googleusercontent.com/-cV1FNQAdYQriSo2C2A2rxyNx95qpo45rLMxm2tu0t_SMKGBaQyXeiaIeD_ZFGNl7j4CpuScOrlwjfAlYi0egOAqwweISb324sGaIMvXp2wlV9dVKg3ErEiGL271o9XAjCyXV0B3xQ=w2400', style='max-width: 700px;')
+                .carousel-caption
+                        font(color = 'white', size = '12') Welcome #{user.googlename}
+    font(color = 'white', size = '5') Profile information
     if !user.phoneNumber
         form.form-inline.my-2.my-lg-0(action='/profile/addNumber/', method='post')
             input.form-control.mr-sm-2(type='search', placeholder='Enter number', aria-label='Search', name = 'numberInput')
@@ -12,32 +17,51 @@ block content
         form.form-inline.my-2.my-lg-0(action='/profile/addNumber/', method='post')
             input.form-control.mr-sm-2(type='search', placeholder=user.phoneNumber, aria-label='Search', name = 'numberInput')
             button.btn.btn-secondary(type='submit') Change phone number
+    if !user.emailAddress
+        form.form-inline.my-2.my-lg-0(action='/profile/addEmail/', method='post')
+            input.form-control.mr-sm-2(type='search', placeholder='Enter email', aria-label='Search', name = 'emailInput')
+            button.btn.btn-secondary(type='submit') Add an Email address
+    else
+        form.form-inline.my-2.my-lg-0(action='/profile/addEmail/', method='post')
+            input.form-control.mr-sm-2(type='search', placeholder=user.emailAddress, aria-label='Search', name = 'numberInput')
+            button.btn.btn-secondary(type='submit') Change email 
+    if user.friends.size > 0
+        font(color = 'white', size = '5') Friends
+    else
+            font(color = 'white', size = '5') No friends yet, go add some :)
+            form.form-inline.my-2.my-lg-0(action='/friends/', method='get')
+                button.btn.btn-primary(type='submit') Find some friends
+    - values = Array.from(user.friends.values());
+        each val in values
+            .card(style='width: 10rem;')
+                    .card-body
+                        h5.card-title #{val.name}
+                        form.form-inline.my-2.my-lg-0(action='/friends/removeFriend', method='post')            
+                            button.btn.btn-danger(type='submit', name='friendRemove',value=val.id) Remove friend
     .row
-        .col
         if user.readBooks.length > 0
             br
-            font(color = 'white', size = '5', position = 'relative', style = 'float: left') Recently read
+            font(color = 'white', size = '5', position = 'relative', style = 'float: left')   .  Recently read
                 .row
                     .card.border-0
                     - var a = 0;
                     each book in user.readBooks
                         -a++;
                         - if (a<6)
-                            .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 25%;')
-                                a(href='/home/' + book.url)
-                                    font(color = 'white', size = '2', position = 'relative')
-                                        img.card-img-top(src=book.poster, width="240",height="auto", alt=book.name)
-        .col
+                            a(href='/home/' + book.id)
+                                font(color = 'white', size = '2', position = 'relative')
+                                    img(src=book.poster, width="160",height="auto", alt=book.name)
+    br
+    .row
         if user.watchedMovies.length > 0
             br
-            font(color = 'white', size = '5', position = 'relative', style = 'float: left') Recently watched
+            font(color = 'white', size = '5', position = 'relative', style = 'float: left')    .  Recently watched
                 .row
                     .card.border-0
                     - var a = 0;
                     each movie in user.watchedMovies
                         -a++;
                         - if (a<6)
-                            .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 25%;')
-                                a(href='/home/movie/' + movie.url)
+                                a(href='/home/movie/' + movie.id)
                                     font(color = 'white', size = '2', position = 'relative')
-                                        img.card-img-top(src=movie.poster, width="240",height="auto", alt=movie.name)
+                                        img(src=movie.poster, width="160",height="auto", alt=movie.name)

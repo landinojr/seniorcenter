@@ -21,11 +21,18 @@ var userSchema = mongoose.Schema( {
   bookIds: [String],
   watchedMovies: [{ name : String, url: String, poster: String, id: String}],
   movieIds: [String],
-  friends: [{ name : String, id: String}],
-  friendIds: [String],
+  friends: {
+    type: Map,
+    of: Object
+  },
+  notifications: [Object],
   profileimg: String,
-  friendReqs: [String],
-  phoneNumber: String
+  friendReqs: {
+    type: Map,
+    of: Object
+  },
+  phoneNumber: String,
+  emailAddress: String
 } );
 
 userSchema.methods.isIndex = function isIndex (index) {
