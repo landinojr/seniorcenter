@@ -2,18 +2,36 @@ var methods = require('../helpers/methods.js');
 var omdb = require('omdb-client');
 var currmedia;
 
+
+/**
+ * [respondToDF description]
+ * This method is the main control method that gets the requests from app.js
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {[type]}     [description]
+ */
 exports.respondToDF =  (req, res) => {
   console.log("we are processing...")
   console.log(req.body)
   var output_string = proccess_request(req, res)
 };
+
+/**
+ * [proccess_request description]
+ * This function is ment to proccess the dialogflow voice request and excute the requird actions.
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {[type]}     [description]
+ */
 function proccess_request(req,res){
+  // simple console print out to indecate we are in proceess request\
   console.log("in process_request")
+  // declars the most imortant variable of all time.
   var async = require('async');
+  // declars a string
   var output_String = "Well, if you are hearing this something went wrong, so it might be a good start to tell you the invocation phrasses. if this is your first time using the app please say 'help'"
 
-  console.log(req.body.queryResult.parameters["any"])
-  console.log(req.body.queryResult.intent.displayName === "books")
+
 
   if(req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
 
@@ -56,8 +74,8 @@ function proccess_request(req,res){
         })
       }
     })
-  }else if(req.body.queryResult.intent.displayName === "add-friends" && req.body.queryResult.parameters["sys.given-name"]){
-      output_String = method.search_users(req.body.queryResult.parameters["sys.given-name"], callback)
+  }else if(req.body.queryResult.intent.displayName === "add-friends" && req.body.queryResult.parameters["given-name"]){
+      output_String = method.search_users(req.body.queryResult.parameters["given-name"], callback)
 
     return res.json({
       "fulfillmentMessages": [],

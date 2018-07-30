@@ -1,17 +1,11 @@
-# seniorcenter
-
-# Dialogflow - sample webhook implementation in Python
-
-This is a really simple webhook implementation that gets Dialogflow classification JSON (i.e. a JSON output of Dialogflow /query endpoint) and returns a fulfillment response.
-
-More info about Dialogflow webhooks could be found here:
-[Dialogflow Webhook](https://dialogflow.com/docs/fulfillment)
+# SeniorClub
+The application to connect the elderly.
 
 # Deploy to:
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://seniorcenternew.herokuapp.com/home)
 
 # What does the service do?
-It's a weather information fulfillment service that uses [Yahoo! Weather API](https://developer.yahoo.com/weather/).
-The services takes the `geo-city` parameter from the action, performs geolocation for the city and requests weather information from Yahoo! Weather public API.
+This service is meant to bridge the gap of the elderly companionship. Studies show the older a persona gets the more isolated they feel, so in an effort to bridge their loneliness they consume massive amounts of media in the informs of TV,Movie, and Books. This application allows for the elderly to meat through commonly consumed media.
 
-The service packs the result in the Dialogflow webhook-compatible response JSON and returns it to Dialogflow.
+#Dialogflow integration
+This application is fully accessible through its vui, which makes it completely voice enabled.
