@@ -27,7 +27,7 @@ block content
           each book in searchData
             .col-sm
               .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 12rem;')
-                a(href=book.link)
+                a(href='/home/'+book.id)
                   img.card-img-top(src=book.thumbnail, width="300",height="auto", alt=book.title)
                 .row.justify-content-center.no-gutters
                   if book.averageRating
