@@ -620,7 +620,7 @@ app.post('/home',(req,res)=> {
       });
   }
   //SEARCH RELATED STUFF
-  if (req.body.mediaType && req.body.mediaType === "Book"){
+  if (req.body.mediaType && req.body.mediaType === "Book" && req.body.searchInput){
     books.search(req.body.searchInput,options_for_key_search(field_name(req.searchType),0,4), function(err, data) {
       if (data){
         res.render('home', {readBookIds: bookIds, keywordsOrder: keywordsToUse, searchType: req.body.mediaType, searchInput: req.body.searchInput, searchData: data, books: dataToUse, title: 'SeniorClub'});
@@ -628,7 +628,7 @@ app.post('/home',(req,res)=> {
         res.render('home', {readBookIds: bookIds, keywordsOrder: keywordsToUse, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: dataToUse, title: 'SeniorClub'});
       }
     });
-  }else if (req.body.mediaType){
+  }else if (req.body.mediaType && req.body.searchInput){
     omdb.search(general_omdb_params(req.body.searchInput, req.body.mediaType), function(err, data) {
       if(err){
         console.log(err);
@@ -640,7 +640,7 @@ app.post('/home',(req,res)=> {
     })
   }else{
     if(req.user){
-      console.log("SHOULD NOT BE HERE");
+      res.redirect('/home');
     }else{
       res.render('home', { keywordsOrder: sampleKeywords, books: sampleData, title: 'SeniorClub'});
     }
