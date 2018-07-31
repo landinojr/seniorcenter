@@ -298,7 +298,7 @@ function common_movies(movieList1, movieList2){
 }
 
 function common_books(bookList1, bookList2){
-  
+
 }
 
 //OLD repalce selfID
@@ -601,13 +601,13 @@ app.post('/home',(req,res)=> {
           }else if(req.body.topicSwitch){
             var topics = JSON.parse(req.body.topicSwitch);
             switch_keywords(topics[0], topics[1], user, function(err, updatedUser){
-              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'}); 
+              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'});
             });
           }else if (req.body.topicDelete){
             remove_keyword(req.body.topicDelete, user, function(err, updatedUser){
-              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'}); 
+              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'});
             });
-          } 
+          }
           console.log(userForMedia.keywordsToSearch);
           if(is_new_media(userForMedia)){
             fill_with_media(5,userForMedia, function(err, resolvedUser){
@@ -722,19 +722,23 @@ app.post('/home/movie/:movieid',(req,res)=> {
 })
 
 
-app.get('/home/:id',(req,res)=> {
+app.get('/home/:id',(req,res) => {
   books.lookup(req.params.id, function(err, data) {
         res.render('media',{volume: data});
     });
 })
 
-app.get('/home/movie/:movieid',(req,res)=> {
+app.get('/home/movie/:movieid',(req,res) => {
   console.log(req.params);
   omdb.get(get_id_params(req.params.movieid,"movie"), function(err, data){
     console.log(data);
     res.render('mediaIMDB',{movieData: data});
    });
 });
+
+app.get('/about', (req,res) => {
+  res.render('about')
+})
 
 app.use('/', function(req, res, next) {
   res.redirect('/home');

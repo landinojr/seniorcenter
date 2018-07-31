@@ -1,6 +1,7 @@
 extends layout
 
 block content
+  #container(style='max-width: 100vw; overflow: hidden;')
     h1(class="blockquote text-center", action = "/home", font color='white')
     .container
         .row
@@ -24,7 +25,7 @@ block content
     else
         form.form-inline.my-2.my-lg-0(action='/profile/addEmail/', method='post')
             input.form-control.mr-sm-2(type='search', placeholder=user.emailAddress, aria-label='Search', name = 'numberInput')
-            button.btn.btn-secondary(type='submit') Change email 
+            button.btn.btn-secondary(type='submit') Change email
     if user.friends.size > 0
         font(color = 'white', size = '5') Friends
     else
@@ -36,7 +37,7 @@ block content
             .card(style='width: 10rem;')
                     .card-body
                         h5.card-title #{val.name}
-                        form.form-inline.my-2.my-lg-0(action='/friends/removeFriend', method='post')            
+                        form.form-inline.my-2.my-lg-0(action='/friends/removeFriend', method='post')
                             button.btn.btn-danger(type='submit', name='friendRemove',value=val.id) Remove friend
     .row
         if user.readBooks.length > 0
