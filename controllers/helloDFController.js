@@ -29,11 +29,13 @@ function proccess_request(req,res){
   // declars the most imortant variable of all time.
   var async = require('async');
   // declars a string
-  var output_String = "Well, if you are hearing this something went wrong, so it might be a good start to tell you the invocation phrasses. if this is your first time using the app please say 'help'"
+  var output_String = "Well, if you are hearing this something went wrong, so it might be a good start to tell you the invocation phrases. if this is your first time using the app please say 'help'"
 
 
 
-  if(req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
+  if(req.body.queryResult.intent.displayName === "connect"){
+
+  }else if(req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
 
     console.log("we in  movie search ")
 
@@ -58,7 +60,7 @@ function proccess_request(req,res){
         console.log(data.Title)
         console.log("loading book...")
 
-      //  output_String = data.Title + " " + data.Year + " " + data.Plot
+      // output_String = data.Title + " " + data.Year + " " + data.Plot
         output_String = "your search has completed the movie you sarched for is "
         + data.Title + " it was released " + data.Year + " and the director is "+
         data.Director
@@ -76,7 +78,7 @@ function proccess_request(req,res){
     })
   }else if(req.body.queryResult.intent.displayName === "add-friends" && req.body.queryResult.parameters["given-name"]){
       output_String = method.search_users(req.body.queryResult.parameters["given-name"], callback)
-
+        //output_String = "well that esculated quickly"
     return res.json({
       "fulfillmentMessages": [],
       "fulfillmentText": output_String,
