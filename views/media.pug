@@ -1,13 +1,13 @@
 extends layout
 
 block content
-  #container(style='margin: 2px; max-width: 100vw; overflow: hidden;')
+  #container(style='margin: 4px; max-width: 100vw; overflow: hidden;')
     h1(class="blockquote text-center", action = "/home", font color='white')
         br
         font(color = 'white', size = '6') #{volume.title}
     if volume.thumbnail
         a(href=volume.link)
-            img(src=volume.thumbnail)
+            img(src=volume.thumbnail, style='max-width: 80vw; margin: 0 auto;')
     br
     font(color = 'white', size = '4', position = 'relative')  #{volume.description}
     if isLoggedIn
