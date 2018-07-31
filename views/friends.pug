@@ -32,8 +32,9 @@ block content
     if friendsByItem
         ul
         each friendRes in friendsByItem
-            -var friendValue = JSON.stringify(friendRes);
-            form.form-inline.my-2.my-lg-0(action='/friends/addFriend', method='post')
+            - if (friendRes.googleid != user.googleid)
+                -var friendValue = JSON.stringify(friendRes);
+                form.form-inline.my-2.my-lg-0(action='/friends/addFriend', method='post')
                     button.btn.btn-secondary(type='submit',name='userAdded',value=friendValue) Add #{friendRes.googlename}
                     //if(!friendsList && !friendsByItem)
     .row
