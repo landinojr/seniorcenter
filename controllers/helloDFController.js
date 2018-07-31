@@ -76,9 +76,9 @@ function proccess_request(req,res){
         })
       }
     })
-  }else if(req.body.queryResult.intent.displayName === "add-friends" && req.body.queryResult.parameters["given-name"]){
-      output_String = method.search_users(req.body.queryResult.parameters["given-name"], callback)
-        //output_String = "well that esculated quickly"
+  }else if(req.body.queryResult.intent.displayName === "add-friends" && req.body.queryResult.parameters["any"]){
+      output_String = method.search_users(req.body.queryResult.parameters["any"], callback)
+      output_String = "well that esculated quickly"
     return res.json({
       "fulfillmentMessages": [],
       "fulfillmentText": output_String,
