@@ -78,18 +78,31 @@ function proccess_request(req,res){
       }
     })
   }else if(req.body.queryResult.intent.displayName === "add-friends" && req.body.queryResult.parameters["any"]){
-      console.log("hello whats something is good")
-      console.log(method.search_users(req.body.queryResult.parameters["any"], callback))
-      output_String = "well that esculated quickly"
 
+    async.series([
+      function(callback){
+        methods.search_users(req.body.queryResult.parameters["any"], callback);
+      },
+    ], function(err, results){
+      if(err){
+        res.status(400);
+        res.json(err);
+      } else {
+        //send result
+        const data = results[0];
 
-    return res.json({
-      "fulfillmentMessages": [],
-      "fulfillmentText": output_String,
-      "payload": {"slack":{"text":output_String}},
-      "outputContexts": [],
-      "source": "Test Source",
-      "followupEventInput": {}
+       output_String = data
+
+        currmedia = data
+        return res.json({
+          "fulfillmentMessages": [],
+          "fulfillmentText": output_String,
+          "payload": {"slack":{"text":output_String}},
+          "outputContexts": [],
+          "source": "Test Source",
+          "followupEventInput": {}
+        })
+      }
     })
 
   }else if(req.body.queryResult.intent.displayName === "books" && req.body.queryResult.parameters["any"]){
