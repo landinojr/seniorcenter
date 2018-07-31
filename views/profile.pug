@@ -16,6 +16,7 @@ block content
         form.form-inline.my-2.my-lg-0(action='/profile/addNumber/', method='post')
             input.form-control.mr-sm-2(type='search', placeholder=user.phoneNumber, aria-label='Search', name = 'numberInput')
             button.btn.btn-secondary(type='submit') Change phone number
+    br
     if !user.emailAddress
         form.form-inline.my-2.my-lg-0(action='/profile/addEmail/', method='post')
             input.form-control.mr-sm-2(type='search', placeholder='Enter email', aria-label='Search', name = 'emailInput')
@@ -32,7 +33,7 @@ block content
                 button.btn.btn-primary(type='submit') Find some friends
     - values = Array.from(user.friends.values());
         each val in values
-            .card(style='width: 10rem;')
+            .card(style='width: 10rem; margin: 5px;')
                     .card-body
                         h5.card-title #{val.name}
                         form.form-inline.my-2.my-lg-0(action='/friends/removeFriend', method='post')
@@ -51,10 +52,10 @@ block content
                                 font(color = 'white', size = '2', position = 'relative')
                                     img(src=book.poster, width="160",height="auto", alt=book.name)
     br
-    .row
+    .row(style='margin-left: 10px;')
         if user.watchedMovies.length > 0
             br
-            font(color = 'white', size = '5', position = 'relative', style = 'float: left')    .  Recently watched
+            font(color = 'white', size = '5', position = 'relative', style = 'float: left;')    .  Recently watched
                 .row
                     .card.border-0
                     - var a = 0;
@@ -63,4 +64,4 @@ block content
                         - if (a<6)
                                 a(href='/home/movie/' + movie.id)
                                     font(color = 'white', size = '2', position = 'relative')
-                                        img(src=movie.poster, width="160",height="auto", alt=movie.name)
+                                        img(src=movie.poster, width="160",height="auto", alt=movie.name, style='margin: 5px;')
