@@ -7,7 +7,7 @@ block content
       font(color = 'white', size = '6') Welcome to #{title}
     if movieData
       font(color = 'white', size = '6', position = 'relative') Results for #{searchInput} in #{searchType}
-        .card-deck
+        .card-deck.row.flex-row.flex-nowrap(style='overflow-x: auto;')
           - var a = 0;
           each movie in movieData
             -a++;
@@ -19,7 +19,7 @@ block content
                       img.card-img-top(src=movie.Poster, width="300",height="auto", alt=movie.Title)
     else if searchData
       font(color = 'white', size = '6', position = 'relative') Results for #{searchInput} in books
-        .card-deck
+        .card-deck.row.flex-row.flex-nowrap(style='overflow-x: auto;')
           each book in searchData
             .col-sm
               .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 12rem;')
@@ -43,24 +43,27 @@ block content
       br
     each keyword in keywordsOrder
       - let topic = books.get(keyword)
-        font(color = 'white', size = '8', position = 'relative')
-          .btn-group
-            button.btn.btn-subject.dropdown-toggle(type='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false', style='font-size: 5.5vmin; margin: 10px; margin-left: 16px; min-width: 130px; width: 14vw; padding-top: 3%;')
-              b(style='text-align: center; margin-top: -6vh;') #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
-            .dropdown-menu
-              - for (let [key, topic] of books)
-                - if (key !== keyword)
-                  form(action='/home', method='post')
-                    - var topics = [key,keyword];
-                    button(name = 'topicDelete', value=key, type='submit', style='float: right; background:transparent; border:none; outline:none;')
+        if isLoggedIn
+          font(color = 'white', size = '8', position = 'relative')
+            .btn-group
+               button.btn.btn-subject.dropdown-toggle(type='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false', style='font-size: 5.5vmin; margin: 10px; margin-left: 16px; min-width: 130px; width: 14vw; padding-top: 3%;')
+                b(style='text-align: center; margin-top: -6vh;') #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
+              .dropdown-menu
+                - for (let [key, topic] of books)
+                  - if (key !== keyword)
+                    form(action='/home', method='post')
+                      - var topics = [key,keyword];
+                      button(name = 'topicDelete', value=key, type='submit', style='float: right; background:transparent; border:none; outline:none;')
                       i.fa.fa-trash-o
-                    button(name = 'topicSwitch', value=topics, type='submit', style='overflow: hidden; background:transparent; border:none; outline:none;')
-                      a.dropdown-item #{key}
-              form(action='/home', method='post')
-                button.btn.btn-default(type='submit', style='float: right')
-                  i.fa.fa-search
-                div(style='overflow: hidden; padding-right: .5em; padding-left: .5em;')
-                  input.form-control.mr-sm-2(type='text', name='searchTopic', style='width: 100%;', placeholder='Add Topic')
+                      button(name = 'topicSwitch', value=topics, type='submit', style='overflow: hidden; background:transparent; border:none; outline:none;')
+                        a.dropdown-item #{key}
+                form(action='/home', method='post')
+                  button.btn.btn-default(type='submit', style='float: right')
+                    i.fa.fa-search
+                  div(style='overflow: hidden; padding-right: .5em; padding-left: .5em;')
+                    input.form-control.mr-sm-2(type='text', name='searchTopic', style='width: 100%;', placeholder='Add Topic')
+        else
+          font(color = 'white', size = '8', position = 'relative') #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
         //font(color = 'white', size = '6', position = 'relative')
         .card-deck.row.flex-row.flex-nowrap(style='overflow-x: auto;')
           each book in topic
