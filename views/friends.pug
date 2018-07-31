@@ -1,14 +1,13 @@
 extends layout
 
 block content
+  #container(style='max-width: 100vw; overflow: hidden;')
     h1(class="blockquote text-center", action = "/home", font color='white')
     br
     .container
-        .row
-            .col
-                img.img-responsive(src='https://lh3.googleusercontent.com/-cV1FNQAdYQriSo2C2A2rxyNx95qpo45rLMxm2tu0t_SMKGBaQyXeiaIeD_ZFGNl7j4CpuScOrlwjfAlYi0egOAqwweISb324sGaIMvXp2wlV9dVKg3ErEiGL271o9XAjCyXV0B3xQ=w2400', style='max-width: 700px;')
-                .carousel-caption
-                        font(color = 'white', size = '12') Welcome #{user.googlename}
+        img.img-responsive.img-block(src='https://lh3.googleusercontent.com/-cV1FNQAdYQriSo2C2A2rxyNx95qpo45rLMxm2tu0t_SMKGBaQyXeiaIeD_ZFGNl7j4CpuScOrlwjfAlYi0egOAqwweISb324sGaIMvXp2wlV9dVKg3ErEiGL271o9XAjCyXV0B3xQ=w2400', style='min-width: 300px; max-width: 55vw; margin: 0 auto; display: block;')
+        p(style='position: absolute; top: 33%; left: 34%; transform: translate(-10%, -85%);')
+          font(style='color: white; font-size: 9vmin; text-align: center;') Welcome #{user.googlename}
     form.form-inline.my-2.my-lg-0(action='/friends/users/find', method='post')
         button.btn.btn-primary(type='submit') What do I have in common?
     form.form-inline.my-2.my-lg-0(action='/friends/find', method='post')
@@ -31,33 +30,37 @@ block content
     if friendsByItem
         ul
         each friendRes in friendsByItem
-            -var friendValue = JSON.stringify(friendRes);
-            form.form-inline.my-2.my-lg-0(action='/friends/addFriend', method='post')
+            - if (friendRes.googleid != user.googleid)
+                -var friendValue = JSON.stringify(friendRes);
+                form.form-inline.my-2.my-lg-0(action='/friends/addFriend', method='post')
                     button.btn.btn-secondary(type='submit',name='userAdded',value=friendValue) Add #{friendRes.googlename}
                     //if(!friendsList && !friendsByItem)
-    - values = Array.from(user.friends.values());
-        each val in values
+    .row
+      - values = Array.from(user.friends.values());
+        .col
+          each val in values
             .card(style='width: 16rem;')
-                    .card-body
-                        .image-block
-                            b.navbar-brand #{val.name}
-                            img(src=val.profileurl, style= 'border-radius: 20%')            
-                        .row
-                            .col-4
-                                i.fa.fa-envelope
-                            .col-4
-                                i.fa.fa-phone
-                        if val.phone
-                            #{val.phone}
-    - values = Array.from(user.friendReqs.values());
-        each val in values
-                .card(style='width: 18rem;')
-                    .card-body
-                        form.form-inline.my-2.my-lg-0(action='/friends/acceptReject', method='post')
-                            .row
-                                h3 You have a friend request from #{val.name}
-                                .row
-                                    .col-5
-                                        button.btn.btn-success(type='submit', name='FRstatus', value=['accept',val.id])  Accept
-                                    .col-5
-                                        button.btn.btn-danger(type='submit', name='FRstatus', value=['reject',val.id])  Reject
+              .card-body
+                .image-block
+                  b.navbar-brand #{val.name}
+                  img(src=val.profileurl, style= 'border-radius: 20%')
+                .row
+                  .col-4
+                    i.fa.fa-envelope
+                  .col-4
+                    i.fa.fa-phone
+                if val.phone
+                  #{val.phone}
+      - values = Array.from(user.friendReqs.values());
+        .col
+          each val in values
+            .card(style='width: 18rem;')
+              .card-body
+                form.form-inline.my-2.my-lg-0(action='/friends/acceptReject', method='post')
+                  .row
+                    h3 You have a friend request from #{val.name}
+                    .row
+                      .col-5
+                        button.btn.btn-success(type='submit', name='FRstatus', value=['accept',val.id])  Accept
+                      .col-5
+                        button.btn.btn-danger(type='submit', name='FRstatus', value=['reject',val.id])  Reject

@@ -21,34 +21,35 @@ html(lang="en")
         ul.navbar-nav.mr-auto
           li.nav-item
             if isLoggedIn
-              a(href="/logout") Log Out
+              a(href="/logout").btn.btn-social.btn-google
+                span.fa.fa-google
+                |     Sign out
             else
-              a(href="/auth/google") Log In
+              a(href="/auth/google").btn.btn-social.btn-google
+                span.fa.fa-google
+                |     Sign in with Google
           if isLoggedIn
             li.nav-item
               a.nav-link(href='/profile') Profile
             li.nav-item
               a.nav-link(href='/friends') Friends
           li.nav-item
-            a.nav-link(href='/media') Your Media
+            a.nav-link(href='/about') About
         form.form-inline.my-2.my-lg-0(id = 'form1', action = '/home', method = 'post')
           .form-row
-            input.form-control.mr-sm-2(type='search', placeholder='Find media', aria-label='Search', id ='searchInput', name = 'searchInput')
-            select.form-control(id = 'searchType',name = 'searchType')
+            input.form-control.mr-sm-2(type='search', placeholder='Find media', aria-label='Search', id='searchInput', name='searchInput', style='margin: 0 2px;')
+            select.form-control(id='searchType', name='searchType', style='margin: 0 2px;')
               option Title
               option Topic
               option Creator
-            select.form-control(id = 'mediaType',name = 'mediaType')
+            select.form-control(id='mediaType', name='mediaType', style='margin: 0 2px')
               option Book
               option Movie
               option TV Show
-            button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
+            button.btn.btn-outline-success.my-2.my-sm-0(type='submit', style='margin: 0 2px') Search
   body(style='background-color: #333333')
     block content
     script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
     script(src='https://apis.google.com/js/platform.js', async='', defer='')
     script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous")
-
-
-

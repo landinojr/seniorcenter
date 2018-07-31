@@ -298,7 +298,7 @@ function common_movies(movieList1, movieList2){
 }
 
 function common_books(bookList1, bookList2){
-  
+
 }
 
 //OLD repalce selfID
@@ -583,8 +583,8 @@ app.get('/logout', function(req, res){
 })
 
 app.post('/home',(req,res)=> {
-  var dataToUse;
-  var keywordsToUse;
+  var dataToUse = sampleData;
+  var keywordsToUse = sampleKeywords;
   var bookIds;
   if (req.user){
     User.findOne({googleid: req.user.googleid}, function(err, user) {
@@ -601,13 +601,13 @@ app.post('/home',(req,res)=> {
           }else if(req.body.topicSwitch){
             var topics = JSON.parse(req.body.topicSwitch);
             switch_keywords(topics[0], topics[1], user, function(err, updatedUser){
-              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'}); 
+              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'});
             });
           }else if (req.body.topicDelete){
             remove_keyword(req.body.topicDelete, user, function(err, updatedUser){
-              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'}); 
+              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'});
             });
-          } 
+          }
           console.log(userForMedia.keywordsToSearch);
           if(is_new_media(userForMedia)){
             fill_with_media(5,userForMedia, function(err, resolvedUser){
@@ -620,7 +620,7 @@ app.post('/home',(req,res)=> {
       });
   }
   //SEARCH RELATED STUFF
-  if (req.body.mediaType && req.body.mediaType === "Book"){
+  if (req.body.mediaType && req.body.mediaType === "Book" && req.body.searchInput){
     books.search(req.body.searchInput,options_for_key_search(field_name(req.searchType),0,4), function(err, data) {
       if (data){
         res.render('home', {readBookIds: bookIds, keywordsOrder: keywordsToUse, searchType: req.body.mediaType, searchInput: req.body.searchInput, searchData: data, books: dataToUse, title: 'SeniorClub'});
@@ -628,7 +628,7 @@ app.post('/home',(req,res)=> {
         res.render('home', {readBookIds: bookIds, keywordsOrder: keywordsToUse, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: dataToUse, title: 'SeniorClub'});
       }
     });
-  }else if (req.body.mediaType){
+  }else if (req.body.mediaType && req.body.searchInput){
     omdb.search(general_omdb_params(req.body.searchInput, req.body.mediaType), function(err, data) {
       if(err){
         console.log(err);
@@ -640,7 +640,7 @@ app.post('/home',(req,res)=> {
     })
   }else{
     if(req.user){
-      console.log("SHOULD NOT BE HERE");
+      res.redirect('/home');
     }else{
       res.render('home', { keywordsOrder: sampleKeywords, books: sampleData, title: 'SeniorClub'});
     }
@@ -722,19 +722,23 @@ app.post('/home/movie/:movieid',(req,res)=> {
 })
 
 
-app.get('/home/:id',(req,res)=> {
+app.get('/home/:id',(req,res) => {
   books.lookup(req.params.id, function(err, data) {
         res.render('media',{volume: data});
     });
 })
 
-app.get('/home/movie/:movieid',(req,res)=> {
+app.get('/home/movie/:movieid',(req,res) => {
   console.log(req.params);
   omdb.get(get_id_params(req.params.movieid,"movie"), function(err, data){
     console.log(data);
     res.render('mediaIMDB',{movieData: data});
    });
 });
+
+app.get('/about', (req,res) => {
+  res.render('about')
+})
 
 app.use('/', function(req, res, next) {
   res.redirect('/home');

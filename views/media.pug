@@ -1,6 +1,7 @@
 extends layout
 
 block content
+  #container(style='margin: 2px; max-width: 100vw; overflow: hidden;')
     h1(class="blockquote text-center", action = "/home", font color='white')
         br
         font(color = 'white', size = '6') #{volume.title}
