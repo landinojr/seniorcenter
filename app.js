@@ -583,8 +583,8 @@ app.get('/logout', function(req, res){
 })
 
 app.post('/home',(req,res)=> {
-  var dataToUse;
-  var keywordsToUse;
+  var dataToUse = sampleData;
+  var keywordsToUse = sampleKeywords;
   var bookIds;
   if (req.user){
     User.findOne({googleid: req.user.googleid}, function(err, user) {
