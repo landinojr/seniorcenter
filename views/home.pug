@@ -4,11 +4,9 @@ block content
   #container(style='max-width: 100vw; overflow: hidden;')
     h1(class="blockquote text-center", action = "/home", font color='white')
     .container
-        .row
-            .col
-                img.img-responsive(src='https://lh3.googleusercontent.com/-cV1FNQAdYQriSo2C2A2rxyNx95qpo45rLMxm2tu0t_SMKGBaQyXeiaIeD_ZFGNl7j4CpuScOrlwjfAlYi0egOAqwweISb324sGaIMvXp2wlV9dVKg3ErEiGL271o9XAjCyXV0B3xQ=w2400', style='max-width: 700px;')
-                .carousel-caption
-                        font(color = 'white', size = '12') Welcome to #{title}
+      img.img-responsive.img-block(src='https://lh3.googleusercontent.com/-cV1FNQAdYQriSo2C2A2rxyNx95qpo45rLMxm2tu0t_SMKGBaQyXeiaIeD_ZFGNl7j4CpuScOrlwjfAlYi0egOAqwweISb324sGaIMvXp2wlV9dVKg3ErEiGL271o9XAjCyXV0B3xQ=w2400', style='min-width: 300px; max-width: 55vw; margin: 0 auto; display: block;')
+      p(style='position: absolute; top: 33%; left: 34%; transform: translate(-10%, -85%);')
+        font(style='color: white; font-size: 9vmin; text-align: center;') Welcome to #{title}
     if movieData
       font(color = 'white', size = '6', position = 'relative') Results for #{searchInput} in #{searchType}
         .card-deck.row.flex-row.flex-nowrap(style='overflow-x: auto;')
