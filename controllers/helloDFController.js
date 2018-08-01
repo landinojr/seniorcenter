@@ -92,8 +92,6 @@ function proccess_request(req,res){
         const data = results[0];
 
        output_String = data
-
-        currmedia = data
         return res.json({
           "fulfillmentMessages": [],
           "fulfillmentText": output_String,
