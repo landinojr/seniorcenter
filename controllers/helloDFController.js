@@ -34,6 +34,9 @@ function proccess_request(req,res){
   console.log(req.body.queryResult.intent.displayName === "add-friends")
   console.log(req.body.queryResult.parameters["any"])
 
+  console.log(mediaType === "movie")
+  comsole.log(mediaType === 'movie')
+
 
   if(req.body.queryResult.intent.displayName === "connect"){
 
