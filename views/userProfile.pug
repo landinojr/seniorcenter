@@ -1,40 +1,37 @@
 extends layout
 
 block content
-    font(color = 'white', size = '5') #{user.googlename}'s profile information
-    br
-    font(color = 'white', size = '5') Friends with
-    - values = Array.from(user.friends.values());
-        each val in values
-            .card(style='width: 10rem;')
-                    .card-body
-                        h5.card-title #{val.name}
-                        a(href='/userProfile/'+val.id)
-                                img(src=val.profileurl, style= 'border-radius: 20%')
-    .row
+  .row
+    .col-md-6
+      font(color = 'white', size = '5') #{user.googlename}'s profile information
+      br
+      font(color = 'white', size = '5') Friends with
+      - values = Array.from(user.friends.values());
+          each val in values
+              .card(style='width: 10rem;')
+                      .card-body
+                          h5.card-title #{val.name}
+                          a(href='/userProfile/'+val.id)
+                                  img(src=val.profileurl, style= 'border-radius: 20%')
+    .col-md-6
+      .row
         if user.readBooks.length > 0
-            br
-            font(color = 'white', size = '5', position = 'relative', style = 'float: left')   .  Recently read
-                .row
-                    .card.border-0
-                    - var a = 0;
-                    each book in user.readBooks
-                        -a++;
-                        - if (a<6)
-                            a(href='/home/' + book.id)
-                                font(color = 'white', size = '2', position = 'relative')
-                                    img(src=book.poster, width="160",height="auto", alt=book.name)
-    br
-    .row
+          br
+          font(color = 'white', size = '5', position = 'relative', style = 'float: left')  Recently read
+            .row(style='overflow-x: auto;')
+              .card.border-0
+              each book in user.readBooks
+                a(href='/home/' + book.id)
+                  font(color = 'white', size = '2', position = 'relative')
+                    img(src=book.poster, style='width: 160px; height: auto; margin: 5px;', alt=book.name)
+      br
+      .row(style='margin-left: 10px;')
         if user.watchedMovies.length > 0
-            br
-            font(color = 'white', size = '5', position = 'relative', style = 'float: left')    .  Recently watched
-                .row
-                    .card.border-0
-                    - var a = 0;
-                    each movie in user.watchedMovies
-                        -a++;
-                        - if (a<6)
-                                a(href='/home/movie/' + movie.id)
-                                    font(color = 'white', size = '2', position = 'relative')
-                                        img(src=movie.poster, width="160",height="auto", alt=movie.name)
+          br
+          font(color = 'white', size = '5', position = 'relative', style = 'float: left;')  Recently watched
+            .row(style='overflow-x: auto;')
+              .card.border-0
+              each movie in user.watchedMovies
+                  a(href='/home/movie/' + movie.id)
+                    font(color = 'white', size = '2', position = 'relative')
+                      img(src=movie.poster, style='width: 160px; height: auto; margin: 5px;', alt=movie.name)
