@@ -38,7 +38,7 @@ block content
           .col-6
             .card(style='width: 20rem; margin: 5px;')
               .card-body
-                h5.card-title(style='font-color: black;') #{val.name}
+                font(color = 'black', size = '5') #{val.name}
                 form.form-inline.my-2.my-lg-0(action='/friends/removeFriend', method='post')
                   button.btn.btn-danger(type='submit', name='friendRemove',value=val.id) Remove friend
       .col-6
