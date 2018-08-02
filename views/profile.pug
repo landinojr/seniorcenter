@@ -22,7 +22,7 @@ block content
         if !user.emailAddress
           form.form-inline.my-2.my-lg-0(action='/profile/addEmail/', method='post')
             input.form-control.mr-sm-2(type='search', placeholder='Enter email', aria-label='Search', name = 'emailInput')
-            button.btn.btn-secondary(type='submit') Add an Email address
+            button.btn.btn-secondary(type='submit') Add an Email addressre
         else
           form.form-inline.my-2.my-lg-0(action='/profile/addEmail/', method='post')
             input.form-control.mr-sm-2(type='search', placeholder=user.emailAddress, aria-label='Search', name = 'numberInput')
@@ -54,7 +54,7 @@ block content
         .row
           if user.readBooks.length > 0
             br
-            font(color = 'white', size = '5', position = 'relative', style = 'float: left')   .  Recently read
+            font(color = 'white', size = '5', position = 'relative', style = 'float: left')   Recently read
               .row(style='overflow-x: auto;')
                 .card.border-0
                 each book in user.readBooks
@@ -65,7 +65,7 @@ block content
         .row(style='margin-left: 10px;')
           if user.watchedMovies.length > 0
             br
-            font(color = 'white', size = '5', position = 'relative', style = 'float: left;')    .  Recently watched
+            font(color = 'white', size = '5', position = 'relative', style = 'float: left;')    Recently watched
               .row(style='overflow-x: auto;')
                 .card.border-0
                 each movie in user.watchedMovies
