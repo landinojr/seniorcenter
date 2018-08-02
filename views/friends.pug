@@ -10,6 +10,8 @@ block content
           font(style='color: white; font-size: 9vmin; text-align: center;') Welcome #{user.googlename}
     form.form-inline.my-2.my-lg-0(action='/friends/users/find', method='post')
         button.btn.btn-primary(type='submit') What do I have in common?
+    if commonMedia
+        font(color = 'white', size = '4') #{commonMedia}
     form.form-inline.my-2.my-lg-0(action='/friends/find', method='post')
         input.form-control.mr-sm-2(type='search', placeholder='Search first or last name', aria-label='Search', name = 'searchInput')
         button.btn.btn-success(type='submit') Find friends
