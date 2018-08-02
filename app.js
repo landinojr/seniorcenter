@@ -550,7 +550,9 @@ app.post('/friends/users/find',(req,res)=> {
   if(req.isAuthenticated()){
       User.findOne({googleid: req.user.googleid}, function(err, user) {
         if(!err){
-         res.render('friends', {user: user});
+          var commonMedia = "You and Luis Adino have both recently watched Avengers: Age of Ultron";
+          console.log(commonMedia);
+         res.render('friends', {user: user, commonMedia: commonMedia});
         }
       });
   }
