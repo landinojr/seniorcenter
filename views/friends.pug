@@ -43,7 +43,8 @@ block content
               .card-body
                 .image-block
                   b.navbar-brand #{val.name}
-                  img(src=val.profileurl, style= 'border-radius: 20%')
+                    a(href='/userProfile/'+val.id)
+                      img(src=val.profileurl, style= 'border-radius: 20%')
                 .row
                   .col-4
                     i.fa.fa-envelope
