@@ -416,6 +416,16 @@ app.get('/profile',(req,res)=> {
   }
 })
 
+app.get('/userProfile/:id',(req,res)=> {
+  if(req.isAuthenticated()){
+      User.findOne({googleid: req.params.id}, function(err, user) {
+        if(!err){
+         res.render('userProfile', {user: user});
+        }
+      });
+  }
+})
+
 app.post('/profile/addNumber',(req,res)=> {
   if(req.isAuthenticated()){
       User.findOne({googleid: req.user.googleid}, function(err, user) {
