@@ -1,6 +1,7 @@
 var methods = require('../helpers/methods.js');
 var omdb = require('omdb-client');
 var currmedia;
+var mediaType;
 
 
 /**
@@ -37,7 +38,7 @@ function proccess_request(req,res){
   if(req.body.queryResult.intent.displayName === "connect"){
 
   }else if(req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
-
+    mediaType = "movie"
     console.log("we in  movie search ")
 
     var movieName = req.body.queryResult.parameters["any"]
@@ -108,7 +109,7 @@ function proccess_request(req,res){
     console.log("we in books ")
 
     var book = req.body.queryResult.parameters["any"]
-
+    mediaType = "book"
     console.log("movie name below")
     console.log(movieName)
     console.log(book)
@@ -203,8 +204,9 @@ function proccess_request(req,res){
 
   } else if(req.body.queryResult.intent.displayName === "search-media"){
     console.log("search media")
-    if(typeof currmedia != 'undefined'){
-      output_String = "what would you like the search"
+    if(mediaType === "movie" && typeof currmedia != 'undefined'){
+      if(typeof currmedia != 'undefined'){
+        output_String = "what would you like the search"
       if(req.body.queryResult.parameters["search-director"]){
         console.log("we searching fam")
         output_String = " The director of " + currMedia + " is " + currMedia.Direcor
@@ -213,10 +215,25 @@ function proccess_request(req,res){
       }else {
         output_String = currmedia.Plot
       }
-  }else{
+    }
 
+
+  }else if(mediaType === "book" && typeof currmedia != 'undefined'){
+    if(typeof currmedia != 'undefined'){
+      output_String = "what would you like the search"
+    if(req.body.queryResult.parameters["search-director"]){
+      console.log("we searching fam")
+      output_String = " The director of " + currMedia + " is " + currMedia.Direcor
+    }else if(req.body.queryResult.parameters["search-year"]){
+      output_String = " The year " + currMedia + " was released is " + currMedia.Year
+    }else {
+      output_String = currmedia.description
+    }
+  }
+  }else{
     output_String = "your must enter what media you would like to search"
   }
+
   return res.json({
     "fulfillmentMessages": [],
     "fulfillmentText": output_String,
@@ -225,8 +242,6 @@ function proccess_request(req,res){
     "source": "Test Source",
     "followupEventInput": {}
   })
-
-
 }else{
   return res.json({
     "fulfillmentMessages": [],
