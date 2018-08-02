@@ -41,10 +41,8 @@ block content
                 font(color = 'black', size = '5') #{val.name}          
                   .row
                     .col-4
-                      .image-block
-                         b.navbar-brand #{val.name}
-                           a(href='/userProfile/'+val.id)
-                             img(src=val.profileurl, style= 'border-radius: 20%') 
+                      a(href='/userProfile/'+val.id)
+                        img(src=val.profileurl, style= 'border-radius: 20%') 
                     .col-4
                       i.fa.fa-envelope
                     .col-4
