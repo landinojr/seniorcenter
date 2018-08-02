@@ -15,7 +15,7 @@ block content
             -a++;
             - if (a<6)
               .col-sm
-                .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 12rem;')
+                .card.text-white.bg-secondary.mb-3.bg-transparent.border-0(style='width: 12rem;')
                   a(href='/home/movie/' + movie.imdbID)
                     font(color = 'white', size = '2', position = 'relative')
                       img.card-img-top(src=movie.Poster, width="300",height="auto", alt=movie.Title)
@@ -24,7 +24,7 @@ block content
         .card-deck.row.flex-row.flex-nowrap(style='overflow-x: auto;')
           each book in searchData
             .col-sm
-              .card.text-white.bg-secondary.mb-3.bg-transparent(style='width: 12rem;')
+              .card.text-white.bg-secondary.mb-3.bg-transparent.border-0(style='width: 12rem;')
                 a(href=book.link)
                   img.card-img-top(src=book.thumbnail, width="300",height="auto", alt=book.title)
                 .row.justify-content-center.no-gutters
