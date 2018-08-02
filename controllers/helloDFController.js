@@ -63,7 +63,7 @@ function proccess_request(req,res){
         console.log("loading book...")
 
       // output_String = data.Title + " " + data.Year + " " + data.Plot
-        output_String = "your search has completed the movie you sarched for is "
+        output_String = "your search has completed the movie you searched for is "
         + data.Title + " it was released " + data.Year + " and the director is "+
         data.Director
 
