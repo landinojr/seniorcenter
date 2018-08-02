@@ -65,7 +65,7 @@ block content
                   div(style='overflow: hidden; padding-right: .5em; padding-left: .5em;')
                     input.form-control.mr-sm-2(type='text', name='searchTopic', style='width: 100%;', placeholder='Add Topic')
         else
-          font(style='padding-left: 10 px; font-color: white; font-size: 8;', position: 'relative') #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
+          font(style='font-color: white; font-size: 8;', position: 'relative') #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
         //font(color = 'white', size = '6', position = 'relative')
         .card-deck.row.flex-row.flex-nowrap(style='overflow-x: auto;')
           each book in topic
