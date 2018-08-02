@@ -9,7 +9,7 @@ block content
         font(style='color: white; font-size: 9vmin; text-align: center;') Welcome #{user.googlename}
   font(color = 'white', size = '5') Profile information
     .row
-      .col-6
+      .col-md-6
         if !user.phoneNumber
           form.form-inline.my-2.my-lg-0(action='/profile/addNumber/', method='post')
             input.form-control.mr-sm-2(type='search', placeholder='Enter number', aria-label='Search', name = 'numberInput')
@@ -41,7 +41,7 @@ block content
                 h5.card-title(style='font-color: black;') #{val.name}
                 form.form-inline.my-2.my-lg-0(action='/friends/removeFriend', method='post')
                   button.btn.btn-danger(type='submit', name='friendRemove',value=val.id) Remove friend
-      .col-6
+      .col-md-6
         .row
           if user.readBooks.length > 0
             br
