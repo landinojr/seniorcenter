@@ -30,7 +30,7 @@ function proccess_request(req,res){
   // declars the most imortant variable of all time.
   var async = require('async');
   // declars a string
-  var output_String = "Well, if you are hearing this something went wrong, so it might be a good start to tell you the invocation phrases. if this is your first time using the app please say 'help'"
+  var output_String = "Well, if you are hearing this something went wrong, so it might be a good start to tell you the invocation words. if this is your first time using the app please say 'help'"
   console.log(req.body.queryResult.intent.displayName === "add-friends")
   console.log(req.body.queryResult.parameters["any"])
 
