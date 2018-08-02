@@ -39,6 +39,16 @@ block content
             .card(style='width: 20rem; margin: 5px;')
               .card-body
                 font(color = 'black', size = '5') #{val.name}
+                  .image-block
+                    a(href='/userProfile/'+val.id)
+                      img(src=val.profileurl, style= 'border-radius: 20%')            
+                  .row
+                    .col-4
+                      i.fa.fa-envelope
+                    .col-4
+                      i.fa.fa-phone
+                  if val.phone
+                    #{val.phone}
                 form.form-inline.my-2.my-lg-0(action='/friends/removeFriend', method='post')
                   button.btn.btn-danger(type='submit', name='friendRemove',value=val.id) Remove friend
       .col-6
