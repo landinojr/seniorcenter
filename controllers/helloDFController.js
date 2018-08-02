@@ -35,7 +35,7 @@ function proccess_request(req,res){
   console.log(req.body.queryResult.parameters["any"])
 
   console.log(mediaType === "movie")
-  comsole.log(mediaType === 'movie')
+  console.log(mediaType === 'movie')
 
 
   if(req.body.queryResult.intent.displayName === "connect"){
