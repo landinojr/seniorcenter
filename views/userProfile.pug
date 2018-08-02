@@ -1,0 +1,40 @@
+extends layout
+
+block content
+    font(color = 'white', size = '5') #{user.googlename}'s profile information
+    br
+    font(color = 'white', size = '5') Friends with
+    - values = Array.from(user.friends.values());
+        each val in values
+            .card(style='width: 10rem;')
+                    .card-body
+                        h5.card-title #{val.name}
+                        a(href='/userProfile/'+val.id)
+                                img(src=val.profileurl, style= 'border-radius: 20%')
+    .row
+        if user.readBooks.length > 0
+            br
+            font(color = 'white', size = '5', position = 'relative', style = 'float: left')   .  Recently read
+                .row
+                    .card.border-0
+                    - var a = 0;
+                    each book in user.readBooks
+                        -a++;
+                        - if (a<6)
+                            a(href='/home/' + book.id)
+                                font(color = 'white', size = '2', position = 'relative')
+                                    img(src=book.poster, width="160",height="auto", alt=book.name)
+    br
+    .row
+        if user.watchedMovies.length > 0
+            br
+            font(color = 'white', size = '5', position = 'relative', style = 'float: left')    .  Recently watched
+                .row
+                    .card.border-0
+                    - var a = 0;
+                    each movie in user.watchedMovies
+                        -a++;
+                        - if (a<6)
+                                a(href='/home/movie/' + movie.id)
+                                    font(color = 'white', size = '2', position = 'relative')
+                                        img(src=movie.poster, width="160",height="auto", alt=movie.name)
