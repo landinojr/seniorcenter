@@ -50,7 +50,7 @@ block content
             .btn-group
                button.btn.btn-subject.dropdown-toggle(type='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false', style='font-size: 5.5vmin; margin: 10px; margin-left: 16px; min-width: 130px; width: 14vw; padding-top: 3%;')
                 b(style='text-align: center; margin-top: -6vh;') #{keyword.charAt(0).toUpperCase() + keyword.slice(1)}
-            .dropdown-menu
+               .dropdown-menu
                 - for (let [key, topic] of books)
                   - if (key !== keyword)
                     form(action='/home', method='post')
