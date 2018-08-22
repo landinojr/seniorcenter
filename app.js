@@ -592,6 +592,7 @@ app.post('/friends/finditem',(req,res)=> {
 app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
+  console.log("logout");
 })
 
 app.post('/home',(req,res)=> {
