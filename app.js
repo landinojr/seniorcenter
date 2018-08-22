@@ -19,7 +19,7 @@ var $ = require('jquery');
 const function_list = [];
 const passport = require('passport');
 
-
+//change
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 // load up the user model
