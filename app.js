@@ -610,7 +610,7 @@ app.post('/home',(req,res) => {
 
 
 //      DO NOT REMOVE AND UNCOMMENT BEFORE PUSH !!!!
-//app.post('/hook', helloDFController.respondToDF)
+app.post('/hook', helloDFController.respondToDF)
 
 //Home page
 app.get('/home',(req,res)=> {
