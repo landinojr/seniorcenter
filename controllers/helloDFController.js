@@ -49,6 +49,8 @@ function proccess_request(req,res){
 
     output_String = req.body.queryResult.parameters["any"]
     // we need to find a person/ lets devlop a system
+
+    console.log(eq.body.queryResult.parameters["any"])
     return res.json({
       "fulfillmentMessages": [],
       "fulfillmentText": output_String,
