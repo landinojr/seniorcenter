@@ -47,11 +47,8 @@ function proccess_request(req,res){
     console.log("search Johny")
     comsole.log("test")
 
-    output_String = req.body.queryResult.parameters["any"]
-    // we need to find a person/ lets devlop a system
-
     console.log(eq.body.queryResult.parameters["any"])
-    
+
 
   }else if(req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
     mediaType = "movie"
