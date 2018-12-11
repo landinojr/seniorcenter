@@ -13,6 +13,7 @@ var mediaType;
  */
 exports.respondToDF =  (req, res) => {
   console.log("we are processing...")
+    console.log(req.body.queryResult.intent.displayName)
   console.log(req.body)
   var output_string = proccess_request(req, res)
 };
