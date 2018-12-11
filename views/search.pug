@@ -1,0 +1,23 @@
+extends layout
+
+block content
+    form.form-inline.my-2.my-lg-0(id = 'form1', action = '/home', method = 'post')
+        .form-row
+            input.form-control.mr-sm-2(type='search', placeholder='Find media', aria-label='Search', id ='searchInput', name = 'searchInput')
+            select.form-control(id = 'searchType',name = 'searchType')
+              option Title
+              option Topic
+              option Creator
+            select.form-control(id = 'mediaType',name = 'mediaType')
+              option Book
+              option Movie
+              option TV Show
+            button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
+
+
+
+
+
+
+
+        
