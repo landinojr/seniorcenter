@@ -45,6 +45,7 @@ function proccess_request(req,res){
 
     console.log("we are getting a person to send to")
     console.log("search Johny")
+    comsole.log("test")
 
     output_String = req.body.queryResult.parameters["any"]
     // we need to find a person/ lets devlop a system
