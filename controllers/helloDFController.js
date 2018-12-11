@@ -46,6 +46,17 @@ function proccess_request(req,res){
     console.log("we are getting a person to send to")
     console.log("search Johny")
 
+    output_String = req.body.queryResult.parameters["any"]
+    // we need to find a person/ lets devlop a system
+    return res.json({
+      "fulfillmentMessages": [],
+      "fulfillmentText": output_String,
+      "payload": {"slack":{"text":output_String}},
+      "outputContexts": [],
+      "source": "Test Source",
+      "followupEventInput": {}
+    })
+
   }else if(req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
     mediaType = "movie"
     console.log("we in  movie search ")

@@ -119,11 +119,11 @@ exports.random_int = function(max){
   return Math.floor(Math.random()*max);
 }
 
-exports.search_users = function(searchName, callback){
+exports.search_users = function(first, callback){
   var nameArr = searchName.split(" ");
   User.findById(id_of_current_user, function(err, user) {
     if(!err){
-      User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
+      User.find({$or: [{searchName: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
       return User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
     }
   });
