@@ -8,8 +8,25 @@ html(lang="en")
     link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
     link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous")
     link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
+    link(rel='stylesheet', href='https://code.getmdl.io/1.3.0/material.indigo-pink.min.css')
+    script(defer='', src='https://code.getmdl.io/1.3.0/material.min.js')
     block head
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light
+    link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en')
+    link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
+    link(rel='stylesheet', href='https://code.getmdl.io/1.3.0/material.min.css')
+    link(rel='stylesheet', href='public/stylesheets/styles.css')
+    style.
+      #view-source {
+      position: fixed;
+      display: block;
+      right: 0;
+      bottom: 0;
+      margin-right: 40px;
+      margin-bottom: 40px;
+      z-index: 900;
+      }
+    nav.navbar.navbar-expand-lg.navbar-light(style='background-color: #e3f2fd;')
       .image-block
         a.navbar-brand(href='/home') SeniorClub
         if isLoggedIn
@@ -21,35 +38,53 @@ html(lang="en")
         ul.navbar-nav.mr-auto
           li.nav-item
             if isLoggedIn
-              a(href="/logout").btn.btn-social.btn-google
-                span.fa.fa-google
-                |     Sign out
+              a.nav-link(href="/logout") Log Out
             else
-              a(href="/auth/google").btn.btn-social.btn-google
-                span.fa.fa-google
-                |     Sign in with Google
+              a.nav-link(href="/auth/google") Log In
           if isLoggedIn
             li.nav-item
-              a.nav-link(href='/profile') Profile
+              a.nav-link(href='/connect') Connect
             li.nav-item
               a.nav-link(href='/friends') Friends
           li.nav-item
-            a.nav-link(href='/about') About
+            a.nav-link(href='/about') Learn More 
         form.form-inline.my-2.my-lg-0(id = 'form1', action = '/home', method = 'post')
           .form-row
-            input.form-control.mr-sm-2(type='search', placeholder='Find media', aria-label='Search', id='searchInput', name='searchInput', style='margin: 0 2px;')
-            select.form-control(id='searchType', name='searchType', style='margin: 0 2px;')
+            input.form-control.mr-sm-2(type='search', placeholder='Find media', aria-label='Search', id ='searchInput', name = 'searchInput')
+            select.form-control(id = 'searchType',name = 'searchType')
               option Title
               option Topic
               option Creator
-            select.form-control(id='mediaType', name='mediaType', style='margin: 0 2px')
+            select.form-control(id = 'mediaType',name = 'mediaType')
               option Book
               option Movie
               option TV Show
-            button.btn.btn-outline-success.my-2.my-sm-0(type='submit', style='margin: 0 2px') Search
-  body(style='background-color: #333333')
+            button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
+    if user
+      nav.navbar.fixed-bottom.navbar-light.bg-light
+        a.navbar-brand(href='/connect')
+          button.btn.btn-light.btn-sm.btn-block(href='/profile', role='button')
+            h2 Connect
+        a.navbar-brand(href='/friends')
+          button.btn.btn-light.btn-sm.btn-block(href='/friends', role='button')
+            h2 Friends
+        a.navbar-brand(href='/profile')
+          button.btn.btn-light.btn-sm.btn-block(href='/profile', role='button')
+            h2 Profile
+        a.navbar-brand(href='/search')
+          button.btn.btn-success.btn-sm.btn-block(href='/search', role='button')
+            h2 Search
+    else
+      nav.navbar.fixed-bottom.navbar-light
+        a.navbar-brand(href="/auth/google")
+          button.btn.btn-danger.btn-sm.btn-block(type='submit') 
+            h2 Log in
+  body(style="background-image:url('https://d2v9y0dukr6mq2.cloudfront.net/video/thumbnail/mCz7hqj/videoblocks-abstract-geometric-subtle-background-animation-red_hd9l3eoql_thumbnail-full01.png')")
     block content
     script(src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous")
     script(src='https://apis.google.com/js/platform.js', async='', defer='')
     script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous")
+
+
+

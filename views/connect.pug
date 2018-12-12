@@ -1,0 +1,36 @@
+extends layout
+
+block content
+    font(color = 'white', size = '12') 
+        h1 #{connectPhrase}
+    form(action='/friends/users/find', method='post')
+        button.btn.btn-info.btn-sm.btn-block(type='submit') 
+            h2 Get reccomendations
+    br
+    if commonMedia
+        font(color = 'white', size = '4') #{commonMedia}
+    form.form-inline.my-2.my-lg-0(action='/friends/find', method='post')
+        input.form-control.mr-sm-2(type='search', placeholder='Search first or last name', aria-label='Search', name = 'searchInput')
+        button.btn.btn-success(type='submit') Find friends
+    if friendsList
+        ul
+        each friendRes in friendsList
+            -var friendValue = JSON.stringify(friendRes);
+            form.form-inline.my-2.my-lg-0(action='/friends/addFriend', method='post')
+                button.btn.btn-secondary(type='submit',name='userAdded',value=friendValue) Add #{friendRes.googlename}
+    br
+    form.form-inline.my-2.my-lg-0( action = '/friends/finditem', method = 'post')
+        .form-row
+            input.form-control.mr-sm-2(type='search', placeholder='Find someone who likes', aria-label='Search', name = 'searchInput')
+            select.form-control(name = 'searchType')
+                option(value = 'movie') Movie by title
+                option(value = 'book') Book by title
+                option(value = 'subject') Book by subject
+            button.btn.btn-success(type='submit') Search
+    if friendsByItem
+        ul
+        each friendRes in friendsByItem
+            - if (friendRes.googleid != user.googleid)
+                -var friendValue = JSON.stringify(friendRes);
+                form.form-inline.my-2.my-lg-0(action='/friends/addFriend', method='post')
+                    button.btn.btn-secondary(type='submit',name='userAdded',value=friendValue) Add #{friendRes.googlename}

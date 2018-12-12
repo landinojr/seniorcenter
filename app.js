@@ -19,7 +19,7 @@ var $ = require('jquery');
 const function_list = [];
 const passport = require('passport');
 
-//change
+
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 // load up the user model
@@ -28,31 +28,7 @@ var User  = require('./models/User');
 // load the auth variables
 var configAuth = require('./config/auth');
 
-function sampleData(){
-  var sampleMap = new Map();
-  for (index in sampleKeywords){
-    let keyword = sampleKeywords[index];
-    function_list.push(function(callback){
-      books.search(keyword,options_for_key_search("subject",0,5), function(err, data) {
-        function_list.pop();
-        sampleMap.set(keyword,data);
-        callback(err, data);
-    });
-    })
-  }
-  async.parallel(function_list, function(err){
-    if(err){
-      console.log(err);
-    } else {
-      console.log("RETURNED " + sampleMap);
-      sampleData = sampleMap;
-    }
-  })
-}
-
-var sampleData;
-sampleData();
-
+//Passport authentication
 passport.use(new GoogleStrategy({
 
     clientID        : configAuth.googleAuth.clientID,
@@ -149,9 +125,6 @@ function create_omdb_params(title){
   return params;
 }
 
-/*GOOGLE BOOKS API*/
-//var book_info = readline.question("Search for a book: ");
-
 function field_name(input){
 switch(input){
   case "Title":
@@ -247,6 +220,7 @@ function remove_keyword(keyword,user,callback){
   return user.save(callback);
 }
 
+//To string functions
 function movie_to_string(movieOBJ){
   return movieOBJ.Title + " released " + movieOBJ.Year + ", directed by " + movieOBJ.Director;
 }
@@ -255,11 +229,11 @@ function book_to_string(bookOBJ){
   return bookOBJ.title + " by " + bookOBJ.authors + ", published by " + bookOBJ.publisher;
 }
 
+//Create paramters to be used by omdb api
 function general_omdb_params(text, type){
   if (type === "TV Show"){
     type = "series";
   }
-  console.log(type);
   return {
     apiKey: 'f7cb9dc5',
     type: type.toLowerCase(),
@@ -267,6 +241,7 @@ function general_omdb_params(text, type){
   }
 }
 
+//Create api key object
 function get_id_params(id, type){
   return {
     apiKey: 'f7cb9dc5',
@@ -275,53 +250,14 @@ function get_id_params(id, type){
   }
 }
 
-//NEEDS WORK
-function find_common_media(user, callback){
-  var commonMedia = [];
-  for(let friend in user.friends.values()){
-      User.findOne({googleid: friend.id}, function(err, results){
-        var mediaObject = {
-          movies: common_movies(user.watchedMovies, results.watchedMovies),
-          books: common_books(user.readBooks, results.readBooks),
-          usersMedia: [friend.name,friend.id]
-        }
-        if (mediaObject.movies.length > 0 || mediaObject.books.length > 0){
-          commonMedia.push(mediaObject);
-        }
-      });
-    }
-  return commonMedia;
-}
 
-function common_movies(movieList1, movieList2){
-
-}
-
-function common_books(bookList1, bookList2){
-
-}
-
-//OLD repalce selfID
-function find_friends(selfID){
-  //REPLACE
-  User.findById(id_of_current_user, function(err, user) {
-    if(!err){
-      User.find({bookIds: {$in: user.bookIds}}, function(err, res){
-        console.log(res);
-      });
-      User.find({movieIds: {$in: user.movieIds}}, function(err, res){
-        console.log(res);
-      });
-    }
-  });
-}
-
+//Search for user
 function search_users(searchName, callback){
   var nameArr = searchName.split(" ");
   return User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
 }
 
-//SEPERATE BUT EQUAL SEARCH F(N)'s
+//Find user who has seen movie
 function find_movie_friend(currentIndex, searchMovie, callback){
   if (currentIndex != "movieIndex"){
     userCollection.dropIndex("bookIndex");
@@ -330,6 +266,7 @@ function find_movie_friend(currentIndex, searchMovie, callback){
   User.find({$text: {$search: searchMovie}}, callback).limit(10);
 }
 
+//Find user who has read a book
 function find_book_friend(currentIndex, searchBook, callback){
   if (currentIndex != "bookIndex"){
     userCollection.dropIndex("movieIndex");
@@ -338,10 +275,7 @@ function find_book_friend(currentIndex, searchBook, callback){
   User.find({$text: {$search: searchBook}}, callback).limit(10);
 }
 
-function notification(type){
-
-}
-
+//Create friend object
 function create_friend_from_user(user){
   return {
     name: user.googlename,
@@ -352,7 +286,7 @@ function create_friend_from_user(user){
 }
 
 var app = express();
-const helloDFController = require('./controllers/helloDFController');
+//const helloDFController = require('./controllers/helloDFController');
 
 const mongoose = require( 'mongoose' );
 const mongoDB = process.env.MONGO_URI || 'mongodb://localhost:27017/seniorcenter';
@@ -379,6 +313,10 @@ app.use(session({ secret: 'zzbbyanana' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+//Get Hicket Help
+
+
 
 //check login status
 app.use(function(req, res, next){
@@ -439,6 +377,7 @@ app.post('/profile/addNumber',(req,res)=> {
   }
 })
 
+//Update email
 app.post('/profile/addEmail',(req,res)=> {
   if(req.isAuthenticated()){
       User.findOne({googleid: req.user.googleid}, function(err, user) {
@@ -452,6 +391,7 @@ app.post('/profile/addEmail',(req,res)=> {
   }
 })
 
+//Send friend request
 app.post('/friends/addFriend',(req,res)=> {
   var userAdded = JSON.parse(req.body.userAdded);
   if(req.isAuthenticated()){
@@ -470,6 +410,7 @@ app.post('/friends/addFriend',(req,res)=> {
   }
 })
 
+//Delete friend
 app.post('/friends/removeFriend',(req,res)=> {
   if(req.isAuthenticated()){
       User.findOne({googleid: req.user.googleid}, function(err, user) {
@@ -488,6 +429,7 @@ app.post('/friends/removeFriend',(req,res)=> {
   }
 })
 
+//Add or ignore friend request
 app.post('/friends/acceptReject',(req,res)=> {
   var reqStatus = JSON.parse(req.body.FRstatus);
   if(req.isAuthenticated()){
@@ -518,6 +460,7 @@ app.post('/friends/acceptReject',(req,res)=> {
   }
 })
 
+//Friends page
 app.get('/friends',(req,res)=> {
   if(req.isAuthenticated()){
       User.findOne({googleid: req.user.googleid}, function(err, user) {
@@ -528,6 +471,59 @@ app.get('/friends',(req,res)=> {
   }
 })
 
+//Connect page
+app.get('/connect',(req,res)=> {
+  if(req.isAuthenticated()){
+      User.findOne({googleid: req.user.googleid}, function(err, user) {
+        if(!err){
+         res.render('connect', {user: user, connectPhrase: 'What do we have in common?'});
+        }
+      });
+  }
+})
+
+//About page
+app.get('/about',(req,res)=> {
+  if(req.isAuthenticated()){
+      User.findOne({googleid: req.user.googleid}, function(err, user) {
+        if(!err){
+         res.render('about', {user: user});
+        }else{
+         res.render('about')
+        }
+      });
+  }else{
+    res.render('about')
+  }
+})
+
+//About page
+app.get('/about',(req,res)=> {
+  if(req.isAuthenticated()){
+      User.findOne({googleid: req.user.googleid}, function(err, user) {
+        if(!err){
+         res.render('about', {user: user});
+        }else{
+         res.render('about')
+        }
+      });
+  }else{
+    res.render('about')
+  }
+})
+
+//About page
+app.get('/search',(req,res)=> {
+  if(req.isAuthenticated()){
+      User.findOne({googleid: req.user.googleid}, function(err, user) {
+        if(!err){
+         res.render('connect', {user: user});
+        }
+      });
+  }
+})
+
+//Search for friends 
 app.post('/friends/find',(req,res)=> {
   if(req.isAuthenticated()){
       User.findOne({googleid: req.user.googleid}, function(err, user) {
@@ -536,7 +532,7 @@ app.post('/friends/find',(req,res)=> {
             if(err){
               res.render('friends', {user: user});
             } else {
-              console.log(results);
+              //console.log(results);
               res.render('friends', {user: user, friendsList: results});
             }
 
@@ -546,18 +542,7 @@ app.post('/friends/find',(req,res)=> {
   }
 })
 
-app.post('/friends/users/find',(req,res)=> {
-  if(req.isAuthenticated()){
-      User.findOne({googleid: req.user.googleid}, function(err, user) {
-        if(!err){
-          var commonMedia = "You and Luis Adino have both recently watched Avengers: Age of Ultron";
-          console.log(commonMedia);
-         res.render('friends', {user: user, commonMedia: commonMedia});
-        }
-      });
-  }
-})
-
+//Find friend by item
 app.post('/friends/finditem',(req,res)=> {
   console.log(req.body);
   if(req.isAuthenticated()){
@@ -589,125 +574,60 @@ app.post('/friends/finditem',(req,res)=> {
   }
 })
 
+//Logout user
 app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
-  console.log("logout");
 })
 
-app.post('/home',(req,res)=> {
-  var dataToUse = sampleData;
-  var keywordsToUse = sampleKeywords;
-  var bookIds;
-  if (req.user){
-    User.findOne({googleid: req.user.googleid}, function(err, user) {
-        if(!err){
-          var userForMedia = user;
-          dataToUse = user.metaData;
-          keywordsToUse = user.bookKeywords;
-          bookIds = user.bookIds;
-          if (req.body.searchTopic){
-            if (!is_media(req.body.searchTopic, user)) add_keyword(req.body.searchTopic,user, function(err, updatedUser){
-              userForMedia = updatedUser;
-              console.log(userForMedia.keywordsToSearch);
-            });
-          }else if(req.body.topicSwitch){
-            var topics = JSON.parse(req.body.topicSwitch);
-            switch_keywords(topics[0], topics[1], user, function(err, updatedUser){
-              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'});
-            });
-          }else if (req.body.topicDelete){
-            remove_keyword(req.body.topicDelete, user, function(err, updatedUser){
-              res.render('home', {readBookIds: user.bookIds, keywordsOrder: updatedUser.bookKeywords, books: updatedUser.metaData, title: 'SeniorClub'});
-            });
-          }
-          console.log(userForMedia.keywordsToSearch);
-          if(is_new_media(userForMedia)){
-            fill_with_media(5,userForMedia, function(err, resolvedUser){
-              if (!err){
-                res.render('home', {readBookIds: user.bookIds, keywordsOrder: resolvedUser.bookKeywords, books: resolvedUser.metaData, title: 'SeniorClub'});
-              }
-            });
-          }
-        }
-      });
+//Multimedia search
+app.post('/home',(req,res) => {
+  var user;
+  if(req.isAuthenticated()){
+    User.findOne({googleid: req.user.googleid}, function(err, foundUser) {
+      user = foundUser;
+
+    });
   }
-  //SEARCH RELATED STUFF
   if (req.body.mediaType && req.body.mediaType === "Book" && req.body.searchInput){
-    books.search(req.body.searchInput,options_for_key_search(field_name(req.searchType),0,4), function(err, data) {
-      if (data){
-        res.render('home', {readBookIds: bookIds, keywordsOrder: keywordsToUse, searchType: req.body.mediaType, searchInput: req.body.searchInput, searchData: data, books: dataToUse, title: 'SeniorClub'});
-      }else{
-        res.render('home', {readBookIds: bookIds, keywordsOrder: keywordsToUse, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: dataToUse, title: 'SeniorClub'});
+    books.search(req.body.searchInput, options_for_key_search(field_name(req.searchType),0,4), function(err, data) {
+      if(data){
+        //console.log(data);
+        res.render('home', {user: user, bookData: data, searchInput: req.body.searchInput, searchType: req.body.mediaType});
       }
     });
-  }else if (req.body.mediaType && req.body.searchInput){
+  }else if (req.body.mediaType  && req.body.searchInput){
     omdb.search(general_omdb_params(req.body.searchInput, req.body.mediaType), function(err, data) {
-      if(err){
-        console.log(err);
-        res.render('home', {readBookIds: bookIds, keywordsOrder: keywordsToUse, searchType: req.body.mediaType, searchInput: req.body.searchInput, books: dataToUse, title: 'SeniorClub'});
-      } else {
-        console.log(data.Search);
-        res.render('home', {readBookIds: bookIds, keywordsOrder: keywordsToUse, searchType: req.body.mediaType, searchInput: req.body.searchInput, movieData: data.Search, books: dataToUse  , title: 'SeniorClub'});
+      if(data){
+        //console.log(data.Search);
+        res.render('home', {user: user, movieData: data.Search, searchInput: req.body.searchInput, searchType: req.body.mediaType});
       }
     })
   }else{
-    if(req.user){
-      res.redirect('/home');
-    }else{
-      res.render('home', { keywordsOrder: sampleKeywords, books: sampleData, title: 'SeniorClub'});
-    }
+    res.render('home',{user: user});
   }
-})
+});
 
 
-app.post('/home/:id',(req,res)=> {
-  books.lookup(req.params.id, function(err, data) {
-      if (data){
-        //console.log(data);
-        var new_data = {
-          name: book_to_string(data),
-          url: data.link,
-          poster: data.thumbnail,
-          id: data.id
-        }
-      User.findOne({googleid: req.user.googleid}, function(err, user) {
-        if (!(data.id in user.bookIds)){
-          user.readBooks.push(new_data);
-          user.bookIds.push(data.id);
-          user.readBookTitles.push(data.title);
-          user.save(function (err, updatedUser) {
-          console.log(updatedUser);
-        });
-        }
-      });
-      res.render('media',{volume: data});
-      }
-    });
-})
-
+//      DO NOT REMOVE AND UNCOMMENT BEFORE PUSH !!!!
 app.post('/hook', helloDFController.respondToDF)
 
+//Home page
 app.get('/home',(req,res)=> {
   if (!req.user){
-    res.render('home', {keywordsOrder: sampleKeywords, books: sampleData, title: 'SeniorClub'});
+    res.render('about');
   }else{
     User.findOne({googleid: req.user.googleid}, function(err, user) {
         if(!err){
-          if(is_new_media(user)){
-            fill_with_media(5,user, function(err, resolvedUser){
-              //console.log(resolvedUser.metaData.get("fiction")[0].title);
-              res.render('home', {readBookIds: user.bookIds, keywordsOrder: resolvedUser.bookKeywords, books: resolvedUser.metaData, title: 'SeniorClub'});
-            });
-          }else{
-            //console.log(user.metaData.get("fiction")[0].title);
-            res.render('home', {readBookIds: user.bookIds, keywordsOrder: user.bookKeywords, books: user.metaData, title: 'SeniorClub'});
-          }
+          res.render('home', {user: user});
+        }else{
+          res.render('about');
         }
       });
   }
 })
 
+//Adding new movie
 app.post('/home/movie/:movieid',(req,res)=> {
   omdb.get(get_id_params(req.params.movieid, "movie"), function(err, data) {
       if (data){
@@ -720,7 +640,7 @@ app.post('/home/movie/:movieid',(req,res)=> {
         }
         User.findOne({googleid: req.user.googleid}, function(err, user) {
           //console.log(new_data);
-          if (!(data.moveid in user.movieIds)){
+          if (!(user.movieIds.includes(data.movieid))){
             user.watchedMovies.push(new_data);
             user.movieIds.push(req.params.movieid);
             user.watchedMovieTitles.push(data.Title);
@@ -734,25 +654,23 @@ app.post('/home/movie/:movieid',(req,res)=> {
     });
 })
 
-
-app.get('/home/:id',(req,res) => {
+//Book page
+app.get('/home/:id',(req,res)=> {
   books.lookup(req.params.id, function(err, data) {
         res.render('media',{volume: data});
     });
 })
 
-app.get('/home/movie/:movieid',(req,res) => {
+//Movie page
+app.get('/home/movie/:movieid',(req,res)=> {
   console.log(req.params);
   omdb.get(get_id_params(req.params.movieid,"movie"), function(err, data){
-    console.log(data);
+    //console.log(data);
     res.render('mediaIMDB',{movieData: data});
    });
 });
 
-app.get('/about', (req,res) => {
-  res.render('about')
-})
-
+//Redirect to home page
 app.use('/', function(req, res, next) {
   res.redirect('/home');
 });
