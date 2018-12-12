@@ -31,3 +31,55 @@ a {
 .main {
     margin-bottom: 30px; /* Add a bottom margin to avoid content overlay */
 }
+
+.card-deck {
+  /*white-space: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;*/
+}
+
+.card-deck card {
+  display: inline-block;
+  width: 100%;
+  height: auto;
+  margin: auto;
+}
+
+.btn-auth {
+  background-color: #4473c1;
+  color: #333;
+}
+
+.btn-subject {
+  background-color: #4473c1;
+  margin: 5px;
+}
+
+@media only screen and (min-width: 768px; max-width: 991px;) {
+  .btn-subject {
+    font-size: 5.5vmin;
+    margin: 10px;
+    margin-left: 16px;
+    min-width: 200px;
+    width: 20vw;
+    padding-top: 3%;
+  }
+
+  #subjecttext {
+    text-align: center;
+    margin-top: -6vh;
+  }
+}
+
+.searchbuttons {
+  margin: 0 2px;
+}
+
+#makinthispretty {
+  width: 100vw;
+}
+
+#roundedrectbehindtext {
+  background-color: #fff;
+  border-radius: 5px;
+}
