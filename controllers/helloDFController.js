@@ -10,7 +10,7 @@ var person
  * This method is the main control method that gets the requests from app.js
  * @param  {[type]} req [description]
  * @param  {[type]} res [description]
- * @return {[type]}     [description]
+ * @return {[type]} res  [description]
  */
 exports.respondToDF =  (req, res) => {
   console.log("we are processing...")
@@ -24,7 +24,7 @@ exports.respondToDF =  (req, res) => {
  * This function is ment to proccess the dialogflow voice request and excute the requird actions.
  * @param  {[type]} req [description]
  * @param  {[type]} res [description]
- * @return {[type]}     [description]
+ * @return {[type]} red [description]
  */
 function proccess_request(req,res){
   // simple console print out to indecate we are in proceess request\
@@ -41,7 +41,7 @@ function proccess_request(req,res){
 
 
   if(req.body.queryResult.intent.displayName === "connect"){
-
+    console.log("this is not implemented")
   }else if(req.body.queryResult.intent.displayName === "Text-to-speach-test-invoke"){
 
     console.log("we are getting a person to send to")
