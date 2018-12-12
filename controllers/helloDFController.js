@@ -2,6 +2,7 @@ var methods = require('../helpers/methods.js');
 var omdb = require('omdb-client');
 var currmedia;
 var mediaType;
+var person
 
 
 /**
@@ -13,7 +14,7 @@ var mediaType;
  */
 exports.respondToDF =  (req, res) => {
   console.log("we are processing...")
-    console.log(req.body.queryResult.intent.displayName)
+  console.log(req.body.queryResult.intent.displayName)
   console.log(req.body)
   var output_string = proccess_request(req, res)
 };
@@ -47,10 +48,17 @@ function proccess_request(req,res){
     console.log("search Johny")
     comsole.log("test")
 
-    console.log(eq.body.queryResult.parameters["any"])
+    console.log(req.body.queryResult.parameters["any"])
+
+  }else if(req.body.queryResult.intent.displayName === "search-Friends"){
+    console.log("adding friends");
+    if(req.body.queryResult.intent.displayName["sys.given-name"] && req.body.queryResult.intent.displayName["sys.last-name"]){
+      var fullName = req.body.queryResult.intent.displayName["sys.given-name"] + " " + req.body.queryResult.intent.displayName["sys.last-name"]
+      methods.search_users(fullName)
+    }
 
 
-  }else if(req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
+  } else if(req.body.queryResult.intent.displayName === "movie-search" && req.body.queryResult.parameters["any"]){
     mediaType = "movie"
     console.log("we in  movie search ")
 
