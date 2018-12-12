@@ -52,6 +52,7 @@ function proccess_request(req,res){
 
   }else if(req.body.queryResult.intent.displayName === "search-Friends"){
     console.log("adding friends");
+
     if(req.body.queryResult.intent.displayName["sys.given-name"] && req.body.queryResult.intent.displayName["sys.last-name"]){
       var fullName = req.body.queryResult.intent.displayName["sys.given-name"] + " " + req.body.queryResult.intent.displayName["sys.last-name"]
       methods.search_users(fullName)
