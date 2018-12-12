@@ -291,7 +291,7 @@ var app = express();
 const mongoose = require( 'mongoose' );
 const mongoDB = process.env.MONGO_URI || 'mongodb://localhost:27017/seniorcenter';
 // here is where we connect to the database!
-mongoose.connect( 'mongodb://localhost:27017/seniorcenter' );
+mongoose.connect( mongoDB );
 const db = mongoose.connection;
 const userCollection = db.collection('users');
 db.on('error', console.error.bind(console, 'connection error:'));
