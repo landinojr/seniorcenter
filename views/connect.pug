@@ -3,9 +3,9 @@ extends layout
 block content
     font(color = 'white', size = '12') 
         h1 #{connectPhrase}
-    form(action='/friends/users/find', method='post')
+    form(action='/connect/recommendations', method='post')
         button.btn.btn-info.btn-sm.btn-block(type='submit') 
-            h2 Get reccomendations
+            h2 Get recommendations
     br
     if recData
         font(color = 'white')
