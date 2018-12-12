@@ -257,6 +257,11 @@ function search_users(searchName, callback){
   return User.find({$or: [{firstname: {$in: nameArr}}, {lastname: {$in: nameArr}}]}, callback);
 }
 
+//Get suggestion data
+function find_user(id, callback){
+    return User.findOne({googleid: id}, callback);
+}
+
 //Find user who has seen movie
 function find_movie_friend(currentIndex, searchMovie, callback){
   if (currentIndex != "movieIndex"){
@@ -537,6 +542,25 @@ app.post('/friends/find',(req,res)=> {
             }
 
           });
+        }
+      });
+  }
+})
+
+//Load new suggestions
+app.post('/connect/recommendations',(req,res)=> {
+  if(req.isAuthenticated()){
+      User.findOne({googleid: req.user.googleid}, function(err, user) {
+        if(!err){
+          var values = Array.from(user.friends.values());
+          for (i=0; i<values.length; i++){
+            var friend = values[i];
+            find_user(friend.id, function(err, results){
+              if (!err){
+                res.render('connect', {user: user, connectPhrase: 'What do we have in common?', recData: results.watchedMovies});
+              }
+            });
+          }
         }
       });
   }
