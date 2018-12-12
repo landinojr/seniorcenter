@@ -47,8 +47,13 @@ function proccess_request(req,res){
     console.log("we are getting a person to send to")
     console.log("search Johny")
     comsole.log("test")
+    var Message = req.body.queryResult.parameters["any"]
 
-    console.log(req.body.queryResult.parameters["any"])
+    console.log(req.body.queryResult.parameters["any"]);
+
+    output_String = "the message you want to send is" + Message
+
+
 
   }else if(req.body.queryResult.intent.displayName === "search-Friends"){
     console.log("adding friends");
