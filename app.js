@@ -286,7 +286,7 @@ function create_friend_from_user(user){
 }
 
 var app = express();
-//const helloDFController = require('./controllers/helloDFController');
+const helloDFController = require('./controllers/helloDFController');
 
 const mongoose = require( 'mongoose' );
 const mongoDB = process.env.MONGO_URI || 'mongodb://localhost:27017/seniorcenter';
@@ -523,7 +523,7 @@ app.get('/search',(req,res)=> {
   }
 })
 
-//Search for friends 
+//Search for friends
 app.post('/friends/find',(req,res)=> {
   if(req.isAuthenticated()){
       User.findOne({googleid: req.user.googleid}, function(err, user) {
