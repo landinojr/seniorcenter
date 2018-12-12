@@ -7,6 +7,16 @@ block content
         button.btn.btn-info.btn-sm.btn-block(type='submit') 
             h2 Get reccomendations
     br
+    if recData
+        font(color = 'white')
+            h1 Recommendations based on friends
+            - var a = 0;
+            each movie in recData
+                -a++;
+                - if (a<6)
+                    a(href='/home/movie/' + movie.id)
+                        img(src=movie.poster, width = '160', height='auto', alt=movie.title)
+    br
     if commonMedia
         font(color = 'white', size = '4') #{commonMedia}
     form.form-inline.my-2.my-lg-0(action='/friends/find', method='post')
